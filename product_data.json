@@ -1,0 +1,36 @@
+{
+    "klasyk": {
+        "bułka": {
+            "amount": 1.0,
+            "price": 2.54,
+            "price/kg (price/package)": 5.09,
+            "Type": "sztukowy"
+        },
+        "sos pom": {
+            "amount": 30.0,
+            "price": 0.39,
+            "price/kg (price/package)": 13.0,
+            "Type": "wagowy"
+        },
+        "ser": {
+            "amount": 80.0,
+            "price": 1.92,
+            "price/kg (price/package)": 24.0,
+            "Type": "wagowy"
+        },
+        "pieczarki": {
+            "amount": 100.0,
+            "price": 1.7,
+            "price/kg (price/package)": 17.0,
+            "Type": "wagowy"
+        }
+    },
+    "mięsny klasyk": {
+        "szynka": {
+            "amount": 20.0,
+            "price": 0.6,
+            "price/kg (price/package)": 30.0,
+            "Type": "wagowy"
+        }
+    }
+}
