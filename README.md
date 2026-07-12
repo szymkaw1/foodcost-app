@@ -2,7 +2,7 @@
 
 A desktop application for calculating recipe costs, suggested selling prices, and Food Cost percentage.
 
-This project was created to solve a real problem in my own food business. Instead of relying on spreadsheets, I decided to build a tool that helps me manage recipe costs while improving my Python skills.
+This project was created to solve a real problem in my own business. I wanted to build a dedicated application for managing recipe costs instead of calculating everything manually. I decided to build a tool that helps me manage recipe costs while improving my Python skills.
 
 The application is actively developed, and new features are added as I continue learning.
 
@@ -31,40 +31,15 @@ My long-term goal is to turn this into a complete restaurant cost management app
 - ✅ Load saved recipes
 - ✅ Display recipes in a table
 - ✅ Display ingredients for the selected recipe
+- ✅ Edit ingredients
 
 ---
-
-# Technologies
-
-- Python
-- CustomTkinter
-- Tkinter Treeview
-- JSON
-- Object-Oriented Programming (OOP)
-
----
-
-# Project Structure
-
-```text
-Food Cost App
-│
-├── appGUI.py          # User interface
-├── Data.py            # Data storage and calculations
-├── Product.py         # Ingredient model
-├── main.py            # Application entry point
-├── product_data.json  # Stored recipes
-```
-
----
-
 # Planned Features
 
 This project is still under active development.
 
 ### Recipe Management
 
-- [ ] Edit recipes
 - [ ] Delete recipes
 - [ ] Duplicate recipes
 
@@ -85,13 +60,37 @@ This project is still under active development.
 
 - [ ] CSV export
 - [ ] Excel export
-
+- [ ] PDF export
+ 
 ### User Experience
 
 - [ ] Improved interface
 - [ ] Custom dialog windows
 - [ ] Better styling
 - [ ] Dark/Light theme support
+
+# Technologies
+
+- Python
+- CustomTkinter
+- Tkinter Treeview
+- JSON
+- Object-Oriented Programming (OOP)
+- Git, Github
+
+---
+
+# Project Structure
+
+```text
+Food Cost App
+│
+├── appGUI.py          # User interface
+├── Data.py            # Data storage and calculations
+├── Product.py         # Ingredient model
+├── main.py            # Application entry point
+├── product_data.json  # Stored recipes
+```
 
 ---
 
@@ -124,8 +123,7 @@ python main.py
 ---
 
 # Screenshots
-
-Screenshots will be added as the project develops.
+![img_1.png](img_1.png)
 
 ---
 
@@ -139,6 +137,8 @@ While building this project I have been learning and practicing:
 - Event handling
 - Organizing larger Python projects
 - Separating GUI from application logic
+- Refactoring code to reduce duplication
+- Input validation
 
 ---
 
