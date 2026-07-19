@@ -25,6 +25,7 @@ class AppGUI:
         self.create_ingredients_table()
         self.create_edit_ingredient_button()
         self.create_return_button()
+        self.create_del_button()
 
 
     # =================================================== WINDOW ===========================================================
@@ -108,7 +109,7 @@ class AppGUI:
 
     # ===================================================  TABLE INSERTS ===========================================================
 
-    def insert_to_table(self, product_name, ingredients_total_price, suggested_price, foodcost_percent_value):
+    def insert_to_recipes(self, product_name, ingredients_total_price, suggested_price, foodcost_percent_value):
 
         self.table.insert("", "end",
                                    values=(
@@ -135,18 +136,31 @@ class AppGUI:
 
 
 # =================================================== INGREDIENTS FUNCS ===========================================================
+    def get_selected_ingredients(self):
+        selected = self.select_data(self.ingredient_table)
 
-    def edit_ingredient(self):
-        selected = self.ingredient_table.selection()
+        if selected is  None:
+            messagebox.showwarning("Oops", "Najpierw wybierz składnik do usunięcia.")
+            return False
 
-        if not selected:
+        values = self.ingredient_table.item(selected[0])
+        old_ingredient_name = values['values'][0]
+        product_name = self.selected_product_name
+
+        return old_ingredient_name, product_name
+
+
+    def set_edit_ingredient_panel(self):
+        selected = self.select_data(self.ingredient_table)
+
+        if selected is  None:
             messagebox.showwarning("Oops", "Najpierw wybierz składnik do edycji.")
             return
 
         self.clear_entries()
         self.name_entry.delete(0, "end")
 
-        values = self.ingredient_table.item(selected[0])
+        values = self.ingredient_table.item(selected[0]) # zwraca słownik
         ingredient_name = values['values'][0]
         product_name = self.selected_product_name
         self.edited_ingredient_name = ingredient_name
@@ -168,38 +182,18 @@ class AppGUI:
 
         self.switch_to_edit_mode()
 
-    def set_ingredient_type(self, current_type):
 
-        if current_type == "wagowy":
-            self.cost_label.configure(text="Cena/Kg:")
-            self.amount_used_label.configure(text="Gramatura:")
-            self.quantity_in_package_entry.configure(state="disabled", fg_color="#495057")
-            self.quantity_in_package_label.configure(text_color="#495057")
-            self.weight_unit_label.configure(text="g")
-            self.weight_unit_label.grid(padx=10)
-
-
-        else:
-            self.cost_label.configure(text="Koszt za paczkę:")
-            self.amount_used_label.configure(text="Zużyto sztuk:")
-            self.quantity_in_package_entry.configure(state='normal', fg_color=ENTRY_COLOR)
-            self.quantity_in_package_label.configure(text_color="white")
-            self.weight_unit_label.configure(text="szt")
-            self.weight_unit_label.grid(padx=5)
-
-
-
-
-    def load_recipe_ingredients(self, event):
+    def load_recipe_ingredients(self,event):
 
         self.clear_table_data(table_name=self.ingredient_table)
 
-        selected = self.table.selection()
+        selected = self.select_data(table_name=self.table)
 
-        if not selected:
+        if selected is None:
             return
 
         values = self.table.item(selected[0])
+        print(values)
 
         product_name = values['values'][0]
         self.selected_product_name = product_name
@@ -223,6 +217,24 @@ class AppGUI:
             self.insert_ingredients(product_name, ingredient_name, amount_used, unit, unit_cost, ingredient_cost)
 
 
+    def set_ingredient_type(self, current_type):
+
+        if current_type == "wagowy":
+            self.cost_label.configure(text="Cena/Kg:")
+            self.amount_used_label.configure(text="Gramatura:")
+            self.quantity_in_package_entry.configure(state="disabled", fg_color="#495057")
+            self.quantity_in_package_label.configure(text_color="#495057")
+            self.weight_unit_label.configure(text="g")
+            self.weight_unit_label.grid(padx=10)
+
+
+        else:
+            self.cost_label.configure(text="Koszt za paczkę:")
+            self.amount_used_label.configure(text="Zużyto sztuk:")
+            self.quantity_in_package_entry.configure(state='normal', fg_color=ENTRY_COLOR)
+            self.quantity_in_package_label.configure(text_color="white")
+            self.weight_unit_label.configure(text="szt")
+            self.weight_unit_label.grid(padx=5)
 
     # =================================================== ADDING PRODUCT CREATION  ===========================================================
 
@@ -287,7 +299,7 @@ class AppGUI:
         self.load_data_button.grid(row=1,column=0, sticky='w', padx=(15,0))
 
     def create_edit_ingredient_button(self):
-        self.edit_data_button = ctk.CTkButton(self.ingredients_table_frame, text="Edytuj składnik", width=150,height=30, fg_color="#467235", corner_radius=5, command=self.edit_ingredient)
+        self.edit_data_button = ctk.CTkButton(self.ingredients_table_frame, text="Edytuj składnik", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.set_edit_ingredient_panel)
         self.edit_data_button.grid(row=1,column=0, sticky='w', padx=(15,0), pady=(0,15))
 
     def create_return_button(self):
@@ -298,6 +310,12 @@ class AppGUI:
         self.save_data_button = ctk.CTkButton(self.frame_product_details, text="Zapisz zmiany", width=150, height=30, fg_color="#467235", corner_radius=5)
         self.save_data_button.grid(row=6, column=1, padx=(0, 30), pady=10, sticky='e')
         self.hide_button(self.save_data_button)
+
+    def create_del_button(self):
+        self.del_ingredient_button = ctk.CTkButton(self.ingredients_table_frame, text="Usuń składnik", width=150,
+                                                   height=30, fg_color="#467235", corner_radius=5,
+                                                   command=self.get_selected_ingredients)
+        self.del_ingredient_button.grid(row=1, column=0, sticky='e', padx=(0, 15), pady=(0, 15))
 
 
 
@@ -344,7 +362,24 @@ class AppGUI:
     def show_if_edited_info(self):
         messagebox.showinfo(title="Świetnie!", message="Składnik został zmieniony.")
 
+    def show_if_deleted_info(self):
+        messagebox.showinfo("Świetnie!", "Składnik został usunięty.")
+
     # =================================================== HELPERS  ===========================================================
+
+
+
+    def load_table_data(self, table_data):
+        for product in table_data:
+            product_name = product["product_name"]
+            ingredients_total_price = product["ingredients_total_price"]
+            suggested_price = product["suggested_price"]
+            foodcost_percent_value = product["foodcost_percent_value"]
+
+
+            self.insert_to_recipes(product_name, ingredients_total_price, suggested_price,
+                                    round(foodcost_percent_value * 100))
+
 
 
     def clear_table_data(self, table_name):
@@ -365,6 +400,15 @@ class AppGUI:
 
     def show_button(self, button):
         button.grid(row=6, column=1, padx=(0,30), pady=10, sticky="e")
+
+
+    def select_data(self, table_name):
+        selected = table_name.selection()
+
+        if not selected:
+            return
+
+        return selected
 
         # =================================================== GUI MODES  ===========================================================
 

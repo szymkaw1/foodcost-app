@@ -68,6 +68,8 @@ class Data:
         if old_ingredient_name in product_data:
             del product_data[old_ingredient_name]
 
+        self.save_to_json()
+
 
     # =================================== MAIN FUNCS ==================================================
 

@@ -93,7 +93,7 @@ def add_product():
 
     interface.show_if_added_info()
     interface.clear_entries()
-    load_table_data()
+    ()
 
 
 
@@ -112,7 +112,7 @@ def edit_ingredient():
     product_info.edit_data(product_name,ingredient,old_ingredient_name)
 
     interface.show_if_edited_info()
-    load_table_data()
+    ()
 
 
 def count_data():
@@ -140,44 +140,26 @@ def count_data():
     return table_data
 
 
-def load_table_data():
+def reload_recipe_table():
+
     interface.clear_table_data(interface.table)
     table_data = count_data()
-
-    for product in table_data:
-        product_name = product["product_name"]
-        ingredients_total_price = product["ingredients_total_price"]
-        suggested_price = product["suggested_price"]
-        foodcost_percent_value = product["foodcost_percent_value"]
+    interface.load_table_data(table_data)
 
 
-        interface.insert_to_table(product_name, ingredients_total_price, suggested_price,
-                              round(foodcost_percent_value * 100))
-
-
-
-
-# def load_table_data():
-#     interface.clear_table_data(interface.table)
-#     foodcost_percent_value = interface.get_foodcost_percent_value_from_user()
-#     product_data = product_info.product_data
-#
-#     if len(product_data) == 0:
-#         interface.show_no_data_warning()
-#     else:
-#         for product_name in product_data:
-#             ingredients_total_price = product_info.count_ingredients_price(product_name)
-#             suggested_price = product_info.count_suggested_price(ingredients_total_price, foodcost_percent_value)
-#
-#             if foodcost_percent_value is not None:
-#                 interface.insert_to_table(product_name, ingredients_total_price, suggested_price, round(foodcost_percent_value * 100))
-#
-#
+def del_ingredient_and_refresh():
+    result = interface.get_selected_ingredients()
+    if result:
+        old_ingredient_name, product_name = result
+        product_info.del_ingredient(old_ingredient_name, product_name)
+        interface.show_if_deleted_info()
+        reload_recipe_table()
 
 
 interface.add_recipe_button.configure(command=add_product)
-interface.load_data_button.configure(command=load_table_data)
+interface.load_data_button.configure(command=reload_recipe_table)
 interface.save_data_button.configure(command=edit_ingredient)
+interface.del_ingredient_button.configure(command=del_ingredient_and_refresh)
 
 
 
