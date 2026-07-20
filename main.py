@@ -1,3 +1,5 @@
+from pandas.core.indexers import check_key_length
+
 from appGUI import AppGUI
 from Product import Ingredient
 from Data import Data
@@ -13,6 +15,7 @@ interface = AppGUI(product_info)
 # jak uzytkownik wpisze "," to zamienia na ".",
 #  zmiana nazwy produktu 11.07
 #  wybieranie skladnika z listy i dodawanie skladnika do niej
+# lista gotowych już składników, które można dodawać bez wpisywania
 
 
 def check_if_float(field, field_name):
@@ -93,11 +96,6 @@ def add_product():
 
     interface.show_if_added_info()
     interface.clear_entries()
-    ()
-
-
-
-
 
 def edit_ingredient():
     old_ingredient_name = interface.edited_ingredient_name
@@ -112,55 +110,74 @@ def edit_ingredient():
     product_info.edit_data(product_name,ingredient,old_ingredient_name)
 
     interface.show_if_edited_info()
-    ()
+
 
 
 def count_data():
     table_data = []
     product_data = product_info.product_data
-    if len(product_data) == 0:
-        interface.show_no_data_warning()
-
-    else:
-        foodcost_percent_value = interface.get_foodcost_percent_value_from_user()
-        if foodcost_percent_value is not None:
-            for product_name in product_data:
-                ingredients_total_price = product_info.count_ingredients_price(product_name)
-                suggested_price = product_info.count_suggested_price(ingredients_total_price, foodcost_percent_value)
+    foodcost_percent_value = interface.get_foodcost_percent_value_from_user()
+    if foodcost_percent_value is not None:
+        for product_name in product_data:
+            ingredients_total_price = product_info.count_ingredients_price(product_name)
+            suggested_price = product_info.count_suggested_price(ingredients_total_price, foodcost_percent_value)
 
 
-                counted_data = {"product_name": product_name,
-                                "ingredients_total_price": ingredients_total_price,
-                                "suggested_price": suggested_price,
-                                "foodcost_percent_value": foodcost_percent_value}
+            counted_data = {"product_name": product_name,
+                            "ingredients_total_price": ingredients_total_price,
+                            "suggested_price": suggested_price,
+                            "foodcost_percent_value": foodcost_percent_value}
 
-                table_data.append(counted_data)
+            table_data.append(counted_data)
 
 
     return table_data
 
+def check_if_file_empty():
+    return len(product_info.product_data) == 0
+
+
 
 def reload_recipe_table():
-
     interface.clear_table_data(interface.table)
-    table_data = count_data()
-    interface.load_table_data(table_data)
+    load_recipe_table()
 
+def load_recipe_table():
+    if not check_if_file_empty():
+        table_data = count_data()
+        interface.load_table_data(table_data)
 
 def del_ingredient_and_refresh():
     result = interface.get_selected_ingredients()
     if result:
         old_ingredient_name, product_name = result
         product_info.del_ingredient(old_ingredient_name, product_name)
-        interface.show_if_deleted_info()
+        interface.show_if_deleted_info("Składnik")
         reload_recipe_table()
 
 
+def del_recipe_and_refresh():
+    if check_if_file_empty():
+        return
+
+    product_name = interface.selected_product_name
+    product_info.del_recipe(product_name)
+    interface.show_if_deleted_info("Produkt")
+
+    reload_recipe_table()
+
+
+
+
+
+
+
+
 interface.add_recipe_button.configure(command=add_product)
-interface.load_data_button.configure(command=reload_recipe_table)
+interface.load_data_button.configure(command=load_recipe_table)
 interface.save_data_button.configure(command=edit_ingredient)
 interface.del_ingredient_button.configure(command=del_ingredient_and_refresh)
-
+interface.del_recipe_button.configure(command=del_recipe_and_refresh)
 
 
 

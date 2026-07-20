@@ -1,6 +1,6 @@
 class Ingredient:
     def __init__(self, name, unit_price, amount, ingredient_type, quantity_in_package):
-        self.name = name
+        self.name = str(name)
         self.unit_price = unit_price
         self.amount = amount
         self.ingredient_type = ingredient_type

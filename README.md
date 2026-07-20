@@ -32,6 +32,7 @@ My long-term goal is to turn this into a complete restaurant cost management app
 - ✅ Display recipes in a table
 - ✅ Display ingredients for the selected recipe
 - ✅ Edit ingredients
+- ✅ Delete ingredients and recipes
 
 ---
 # Planned Features

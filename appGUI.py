@@ -25,9 +25,8 @@ class AppGUI:
         self.create_ingredients_table()
         self.create_edit_ingredient_button()
         self.create_return_button()
-        self.create_del_button()
-
-
+        self.create_del_ingredient_button()
+        self.create_del_recipe_button()
     # =================================================== WINDOW ===========================================================
 
     def create_window(self):
@@ -195,9 +194,10 @@ class AppGUI:
         values = self.table.item(selected[0])
         print(values)
 
-        product_name = values['values'][0]
-        self.selected_product_name = product_name
+        product_name = str(values['values'][0])
+        self.selected_product_name = product_name # przypisanie
         product_data = self.product_info.product_data
+        print(type(product_name))
 
         for ingredient, values in product_data[product_name].items():
             ingredient_name = ingredient
@@ -296,7 +296,7 @@ class AppGUI:
 
     def create_load_data_button(self):
         self.load_data_button = ctk.CTkButton(self.product_table_frame, text="Wczytaj dane", width=150,height=30, fg_color="#467235", corner_radius=5)
-        self.load_data_button.grid(row=1,column=0, sticky='w', padx=(15,0))
+        self.load_data_button.grid(row=1,column=0, sticky='w', padx=(15,0), pady=(0,15))
 
     def create_edit_ingredient_button(self):
         self.edit_data_button = ctk.CTkButton(self.ingredients_table_frame, text="Edytuj składnik", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.set_edit_ingredient_panel)
@@ -311,13 +311,16 @@ class AppGUI:
         self.save_data_button.grid(row=6, column=1, padx=(0, 30), pady=10, sticky='e')
         self.hide_button(self.save_data_button)
 
-    def create_del_button(self):
+    def create_del_ingredient_button(self):
         self.del_ingredient_button = ctk.CTkButton(self.ingredients_table_frame, text="Usuń składnik", width=150,
                                                    height=30, fg_color="#467235", corner_radius=5,
-                                                   command=self.get_selected_ingredients)
+                                                   )
         self.del_ingredient_button.grid(row=1, column=0, sticky='e', padx=(0, 15), pady=(0, 15))
 
 
+    def create_del_recipe_button(self):
+        self.del_recipe_button = ctk.CTkButton(self.product_table_frame, text="Usuń recepturę", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.set_edit_ingredient_panel)
+        self.del_recipe_button.grid(row=1,column=0, sticky='e', padx=(0,15), pady=(0,15))
 
 
 
@@ -362,8 +365,11 @@ class AppGUI:
     def show_if_edited_info(self):
         messagebox.showinfo(title="Świetnie!", message="Składnik został zmieniony.")
 
-    def show_if_deleted_info(self):
-        messagebox.showinfo("Świetnie!", "Składnik został usunięty.")
+    def show_if_deleted_info(self, item_to_delete):
+        messagebox.showinfo("Świetnie!", f"{item_to_delete} został usunięty.")
+
+    def show_choose_product_info(self):
+        messagebox.showwarning("Oops", "Najpierw wybierz produkt do usunięcia.")
 
     # =================================================== HELPERS  ===========================================================
 
