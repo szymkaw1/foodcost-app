@@ -97,8 +97,11 @@ def add_product():
 
     product_info.add_data(product_name, ingredient)
 
+    product_info.save_to_json()
     interface.show_if_added_info()
     interface.clear_entries()
+
+
 
 def edit_ingredient():
     old_ingredient_name = interface.edited_ingredient_name
@@ -111,7 +114,7 @@ def edit_ingredient():
     ingredient, product_name = created_ingredient
 
     product_info.edit_data(product_name,ingredient,old_ingredient_name)
-
+    product_info.save_to_json()
     interface.show_if_edited_info()
 
 
@@ -139,9 +142,6 @@ def count_data():
 def check_if_file_empty():
     return len(product_info.product_data) == 0
 
-
-
-
 def reload_recipe_table(show_warning=True):
     interface.clear_table_data(interface.table)
     load_recipe_table(show_warning)
@@ -161,8 +161,10 @@ def del_ingredient_and_refresh():
     if result:
         old_ingredient_name, product_name = result
         product_info.del_ingredient(old_ingredient_name, product_name)
+        product_info.save_to_json()
         interface.show_if_deleted_info("Składnik")
         reload_recipe_table()
+
 
 
 def del_recipe_and_refresh():
@@ -177,9 +179,12 @@ def del_recipe_and_refresh():
         return
 
     product_info.del_recipe(product_name)
+    product_info.save_to_json()
     interface.show_if_deleted_info("Produkt")
 
     reload_recipe_table(show_warning=False)
+
+
 
 
 

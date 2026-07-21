@@ -68,7 +68,7 @@ class Data:
         if old_ingredient_name in product_data:
             del product_data[old_ingredient_name]
 
-        self.save_to_json()
+
 
 
     # =================================== MAIN FUNCS ==================================================
@@ -89,7 +89,7 @@ class Data:
             self.del_ingredient(old_ingredient_name, product_name)
             self.add_ingredient(product_name, new_ingredient)
 
-        self.save_to_json()
+
 
     def add_data(self, product_name, ingredient):
         if product_name not in self.product_data:
@@ -98,12 +98,15 @@ class Data:
         else:
             self.add_ingredient(product_name, ingredient)
 
-        self.save_to_json()
+
 
     def del_recipe(self, product_name):
         self.product_data.pop(product_name)
-        self.save_to_json()
 
+
+
+    def change_product_name(self, product_name):
+        pass
 
 
 
