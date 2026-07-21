@@ -101,10 +101,10 @@ class Data:
         self.save_to_json()
 
     def del_recipe(self, product_name):
-
-
         self.product_data.pop(product_name)
         self.save_to_json()
+
+
 
 
 

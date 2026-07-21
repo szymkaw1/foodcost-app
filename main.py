@@ -10,12 +10,15 @@ interface = AppGUI(product_info)
 
 #TODO
 # SPRAWDZENIE CZY PRODUKT/SKLADNIK JEST JUZ NA LISCIE
-# usuwanie składnikow
 # w tabeli mozna wybrac wartosc procentowa foodcostu, dzieki temu oblicza to nam dla wartosci % dla reszty danych z tabeli (MOZE)
 # jak uzytkownik wpisze "," to zamienia na ".",
 #  zmiana nazwy produktu 11.07
 #  wybieranie skladnika z listy i dodawanie skladnika do niej
 # lista gotowych już składników, które można dodawać bez wpisywania
+# Potwierdzenie przed usunieciem
+# zmiana wartosci foodcost, w oknie
+# wybieranie skladnika w trybie dodawania zeby automatycznie przypisalo nazwe produktu
+# lub wybranie tego za pomoca przycisku pod tabela, cos typu "Dodaj skladnik do receptury"
 
 
 def check_if_float(field, field_name):
@@ -138,14 +141,20 @@ def check_if_file_empty():
 
 
 
-def reload_recipe_table():
-    interface.clear_table_data(interface.table)
-    load_recipe_table()
 
-def load_recipe_table():
+def reload_recipe_table(show_warning=True):
+    interface.clear_table_data(interface.table)
+    load_recipe_table(show_warning)
+    if check_if_file_empty():
+        interface.title_ingredients.configure(text="Składniki:")
+
+def load_recipe_table(show_warning=True):
     if not check_if_file_empty():
         table_data = count_data()
         interface.load_table_data(table_data)
+    elif show_warning:
+
+        interface.show_no_data_warning()
 
 def del_ingredient_and_refresh():
     result = interface.get_selected_ingredients()
@@ -158,13 +167,19 @@ def del_ingredient_and_refresh():
 
 def del_recipe_and_refresh():
     if check_if_file_empty():
+        interface.title_ingredients.configure(text="Składniki:")
+        interface.show_choose_product_info()
         return
 
-    product_name = interface.selected_product_name
+    product_name = interface.get_selected_recipe()
+
+    if not product_name:
+        return
+
     product_info.del_recipe(product_name)
     interface.show_if_deleted_info("Produkt")
 
-    reload_recipe_table()
+    reload_recipe_table(show_warning=False)
 
 
 
@@ -174,7 +189,7 @@ def del_recipe_and_refresh():
 
 
 interface.add_recipe_button.configure(command=add_product)
-interface.load_data_button.configure(command=load_recipe_table)
+interface.load_data_button.configure(command=reload_recipe_table)
 interface.save_data_button.configure(command=edit_ingredient)
 interface.del_ingredient_button.configure(command=del_ingredient_and_refresh)
 interface.del_recipe_button.configure(command=del_recipe_and_refresh)

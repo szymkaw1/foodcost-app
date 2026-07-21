@@ -27,6 +27,7 @@ class AppGUI:
         self.create_return_button()
         self.create_del_ingredient_button()
         self.create_del_recipe_button()
+        self.create_change_name_button()
     # =================================================== WINDOW ===========================================================
 
     def create_window(self):
@@ -148,6 +149,18 @@ class AppGUI:
 
         return old_ingredient_name, product_name
 
+    def get_selected_recipe(self):
+        selected = self.select_data(self.table)
+
+        if selected is  None:
+            messagebox.showwarning("Oops", "Najpierw wybierz produkt do usunięcia.")
+            return False
+
+        values = self.table.item(selected[0])
+        product_name = str(values['values'][0])
+        return product_name
+
+
 
     def set_edit_ingredient_panel(self):
         selected = self.select_data(self.ingredient_table)
@@ -192,12 +205,10 @@ class AppGUI:
             return
 
         values = self.table.item(selected[0])
-        print(values)
-
         product_name = str(values['values'][0])
         self.selected_product_name = product_name # przypisanie
         product_data = self.product_info.product_data
-        print(type(product_name))
+
 
         for ingredient, values in product_data[product_name].items():
             ingredient_name = ingredient
@@ -322,8 +333,11 @@ class AppGUI:
         self.del_recipe_button = ctk.CTkButton(self.product_table_frame, text="Usuń recepturę", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.set_edit_ingredient_panel)
         self.del_recipe_button.grid(row=1,column=0, sticky='e', padx=(0,15), pady=(0,15))
 
-
-
+    def create_change_name_button(self):
+        self.change_name_button = ctk.CTkButton(self.product_table_frame, text="Zmień nazwę receptury", width=150, height=30,
+                                               fg_color="#467235", corner_radius=5
+                                               )
+        self.change_name_button.grid(row=1, column=0, sticky='e', padx=(0, 175), pady=(0, 15))
 
     # =================================================== EXTRA FUNCTIONS ===========================================================
     def get_foodcost_percent_value_from_user(self):

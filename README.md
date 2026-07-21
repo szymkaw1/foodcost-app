@@ -41,7 +41,6 @@ This project is still under active development.
 
 ### Recipe Management
 
-- [ ] Delete recipes
 - [ ] Duplicate recipes
 
 ### Database
