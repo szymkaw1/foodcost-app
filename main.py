@@ -1,4 +1,3 @@
-from pandas.core.indexers import check_key_length
 
 from appGUI import AppGUI
 from Product import Ingredient
@@ -100,6 +99,7 @@ def add_product():
     product_info.save_to_json()
     interface.show_if_added_info()
     interface.clear_entries()
+    reload_recipe_table()
 
 
 
@@ -145,15 +145,14 @@ def check_if_file_empty():
 def reload_recipe_table(show_warning=True):
     interface.clear_table_data(interface.table)
     load_recipe_table(show_warning)
-    if check_if_file_empty():
-        interface.title_ingredients.configure(text="Składniki:")
+
+    interface.title_ingredients.configure(text="Składniki:")
 
 def load_recipe_table(show_warning=True):
     if not check_if_file_empty():
         table_data = count_data()
         interface.load_table_data(table_data)
     elif show_warning:
-
         interface.show_no_data_warning()
 
 def del_ingredient_and_refresh():
@@ -173,7 +172,7 @@ def del_recipe_and_refresh():
         interface.show_choose_product_info()
         return
 
-    product_name = interface.get_selected_recipe()
+    product_name = interface.get_selected_recipe('usunięcia.')
 
     if not product_name:
         return
@@ -183,6 +182,28 @@ def del_recipe_and_refresh():
     interface.show_if_deleted_info("Produkt")
 
     reload_recipe_table(show_warning=False)
+
+
+def edit_name_and_refresh():
+    old_product_name = interface.get_selected_recipe("zmiany nazwy.")
+
+    if not old_product_name:
+        return
+
+    new_product_name = interface.get_new_recipe_name(old_product_name)
+
+
+    if new_product_name is not None:
+
+        if new_product_name not in product_info.product_data:
+            product_info.edit_product_name(old_product_name, new_product_name)
+            product_info.save_to_json()
+
+            reload_recipe_table()
+        else:
+            interface.show_name_already_used_info()
+
+
 
 
 
@@ -198,6 +219,7 @@ interface.load_data_button.configure(command=reload_recipe_table)
 interface.save_data_button.configure(command=edit_ingredient)
 interface.del_ingredient_button.configure(command=del_ingredient_and_refresh)
 interface.del_recipe_button.configure(command=del_recipe_and_refresh)
+interface.edit_recipe_name_button.configure(command=edit_name_and_refresh)
 
 
 

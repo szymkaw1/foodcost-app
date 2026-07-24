@@ -105,8 +105,21 @@ class Data:
 
 
 
-    def change_product_name(self, product_name):
-        pass
+    def edit_product_name(self, old_product_name, new_product_name):
+        current_product = self.product_data[old_product_name]
+        new_name_product = ({new_product_name: current_product})
+        self.product_data.update(new_name_product)
+        self.del_recipe(old_product_name)
+
+
+
+
+
+
+
+
+
+
 
 
 

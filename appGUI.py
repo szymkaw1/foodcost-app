@@ -27,7 +27,7 @@ class AppGUI:
         self.create_return_button()
         self.create_del_ingredient_button()
         self.create_del_recipe_button()
-        self.create_change_name_button()
+        self.create_edit_recipe_name_button()
     # =================================================== WINDOW ===========================================================
 
     def create_window(self):
@@ -149,11 +149,11 @@ class AppGUI:
 
         return old_ingredient_name, product_name
 
-    def get_selected_recipe(self):
+    def get_selected_recipe(self,chosen_task):
         selected = self.select_data(self.table)
 
         if selected is  None:
-            messagebox.showwarning("Oops", "Najpierw wybierz produkt do usunięcia.")
+            messagebox.showwarning("Oops", f"Najpierw wybierz produkt do {chosen_task}")
             return False
 
         values = self.table.item(selected[0])
@@ -240,7 +240,7 @@ class AppGUI:
 
 
         else:
-            self.cost_label.configure(text="Koszt za paczkę:")
+            self.cost_label.configure(text="Koszt za całość:")
             self.amount_used_label.configure(text="Zużyto sztuk:")
             self.quantity_in_package_entry.configure(state='normal', fg_color=ENTRY_COLOR)
             self.quantity_in_package_label.configure(text_color="white")
@@ -333,11 +333,11 @@ class AppGUI:
         self.del_recipe_button = ctk.CTkButton(self.product_table_frame, text="Usuń recepturę", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.set_edit_ingredient_panel)
         self.del_recipe_button.grid(row=1,column=0, sticky='e', padx=(0,15), pady=(0,15))
 
-    def create_change_name_button(self):
-        self.change_name_button = ctk.CTkButton(self.product_table_frame, text="Zmień nazwę receptury", width=150, height=30,
-                                               fg_color="#467235", corner_radius=5
-                                               )
-        self.change_name_button.grid(row=1, column=0, sticky='e', padx=(0, 175), pady=(0, 15))
+    def create_edit_recipe_name_button(self):
+        self.edit_recipe_name_button = ctk.CTkButton(self.product_table_frame, text="Zmień nazwę receptury", width=150, height=30,
+                                                     fg_color="#467235", corner_radius=5
+                                                     )
+        self.edit_recipe_name_button.grid(row=1, column=0, sticky='e', padx=(0, 175), pady=(0, 15))
 
     # =================================================== EXTRA FUNCTIONS ===========================================================
     def get_foodcost_percent_value_from_user(self):
@@ -360,6 +360,39 @@ class AppGUI:
                     messagebox.showwarning(title="Oops", message="Liczba musi być z przedziału od 1 do 100.")
             else:
                 return self.foodcost_value_from_user
+
+    def get_new_recipe_name(self, old_product_name):
+        new_product_name = simpledialog.askstring(title="Nowa nazwa receptury", prompt="Podaj nową nazwę receptury.")
+
+
+
+        if new_product_name is None:
+            return
+
+        if new_product_name == "":
+            messagebox.showwarning(title="Oops", message="Nazwa nie może być pusta.")
+            return
+
+        if len(new_product_name) > 30:
+            messagebox.showwarning(title="Oops", message="Nazwa nie może być dłuższa niż 30 znaków.")
+            return
+
+        if new_product_name == old_product_name:
+            messagebox.showwarning(title="Oops", message="Nazwa nie może być tak sama jak obecna.")
+            return
+
+        if self.check_spaces_in_text(new_product_name):
+            messagebox.showwarning(title="Oops", message="Nazwa niepoprawna. Zwróć uwagę na spacje w nazwie.")
+            return
+
+
+        return new_product_name
+
+
+
+
+
+
 
 
     # =================================================== DIALOGS ===========================================================
@@ -385,7 +418,20 @@ class AppGUI:
     def show_choose_product_info(self):
         messagebox.showwarning("Oops", "Najpierw wybierz produkt do usunięcia.")
 
+    def show_name_already_used_info(self):
+        messagebox.showwarning("Oops", "Podana nazwa jest już zajęta.")
+
     # =================================================== HELPERS  ===========================================================
+    def check_spaces_in_text(self, text):
+
+        num_of_letters = len(text)
+
+        if text[0].isspace() or text[num_of_letters - 1].isspace():
+           # messagebox.showwarning("Oops", "Nazwa nie może zaczynać się spacją LUB kończyć się spacją.")
+            return True
+
+
+
 
 
 
