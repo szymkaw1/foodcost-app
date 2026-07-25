@@ -173,9 +173,11 @@ class AppGUI:
         self.name_entry.delete(0, "end")
 
         values = self.ingredient_table.item(selected[0]) # zwraca słownik
-        ingredient_name = values['values'][0]
+        ingredient_name = str(values['values'][0])
+
         product_name = self.selected_product_name
         self.edited_ingredient_name = ingredient_name
+
         ingredient_values = self.product_info.get_ingredient(product_name, ingredient_name)
         ingredient_price = ingredient_values['price/kg (price/package)']
         amount_used = ingredient_values['amount']
@@ -429,11 +431,6 @@ class AppGUI:
         if text[0].isspace() or text[num_of_letters - 1].isspace():
            # messagebox.showwarning("Oops", "Nazwa nie może zaczynać się spacją LUB kończyć się spacją.")
             return True
-
-
-
-
-
 
     def load_table_data(self, table_data):
         for product in table_data:

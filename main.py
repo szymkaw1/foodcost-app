@@ -41,6 +41,7 @@ def check_if_correct_data(amount_used, ingredient_price, quantity_in_package):
         if amount_used is None or ingredient_price is None: # is None, poniewaz w check_if_float() gdy wartosc nie byla liczba, to zwraca None
             return None
 
+
         if amount_used > 0 and ingredient_price > 0:
             return amount_used, ingredient_price, quantity_in_package
 
@@ -116,6 +117,7 @@ def edit_ingredient():
     product_info.edit_data(product_name,ingredient,old_ingredient_name)
     product_info.save_to_json()
     interface.show_if_edited_info()
+    reload_recipe_table()
 
 
 
