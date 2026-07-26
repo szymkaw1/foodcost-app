@@ -204,6 +204,7 @@ class AppGUI:
         selected = self.select_data(table_name=self.table)
 
         if selected is None:
+            self.title_ingredients.configure(text="Składniki:")
             return
 
         values = self.table.item(selected[0])
@@ -233,7 +234,7 @@ class AppGUI:
     def set_ingredient_type(self, current_type):
 
         if current_type == "wagowy":
-            self.cost_label.configure(text="Cena/Kg:")
+            self.cost_label.configure(text="Cena za kilogram:")
             self.amount_used_label.configure(text="Gramatura:")
             self.quantity_in_package_entry.configure(state="disabled", fg_color="#495057")
             self.quantity_in_package_label.configure(text_color="#495057")
@@ -363,38 +364,9 @@ class AppGUI:
             else:
                 return self.foodcost_value_from_user
 
-    def get_new_recipe_name(self, old_product_name):
+    def get_new_recipe_name(self):
         new_product_name = simpledialog.askstring(title="Nowa nazwa receptury", prompt="Podaj nową nazwę receptury.")
-
-
-
-        if new_product_name is None:
-            return
-
-        if new_product_name == "":
-            messagebox.showwarning(title="Oops", message="Nazwa nie może być pusta.")
-            return
-
-        if len(new_product_name) > 30:
-            messagebox.showwarning(title="Oops", message="Nazwa nie może być dłuższa niż 30 znaków.")
-            return
-
-        if new_product_name == old_product_name:
-            messagebox.showwarning(title="Oops", message="Nazwa nie może być tak sama jak obecna.")
-            return
-
-        if self.check_spaces_in_text(new_product_name):
-            messagebox.showwarning(title="Oops", message="Nazwa niepoprawna. Zwróć uwagę na spacje w nazwie.")
-            return
-
-
         return new_product_name
-
-
-
-
-
-
 
 
     # =================================================== DIALOGS ===========================================================
@@ -417,21 +389,30 @@ class AppGUI:
     def show_if_deleted_info(self, item_to_delete):
         messagebox.showinfo("Świetnie!", f"{item_to_delete} został usunięty.")
 
-    def show_choose_product_info(self):
+    def show_choose_product_warning(self):
         messagebox.showwarning("Oops", "Najpierw wybierz produkt do usunięcia.")
 
-    def show_name_already_used_info(self):
-        messagebox.showwarning("Oops", "Podana nazwa jest już zajęta.")
+    def show_name_already_used_warning(self, name):
+        messagebox.showwarning("Oops", f"Podana nazwa {name} jest już zajęta.")
+
+    def show_empty_name_warning(self, name):
+        messagebox.showwarning(title="Oops", message=f"Nazwa {name} nie może być pusta.")
+
+    def show_name_too_long_warning(self, name):
+        messagebox.showwarning(title="Oops", message=f"Nazwa {name} jest za długa.")
+
+    def show_name_has_spaces_warning(self, name):
+        messagebox.showwarning(title="Oops", message=f"Nazwa {name} niepoprawna. Zwróć uwagę na spacje w nazwie.")
+
+
+    def show_invalid_number_warning(self):
+        messagebox.showwarning(title="Oops", message="Podano niepoprawną wartość liczbową.")
+
+    def show_must_be_num_warning(self):
+        messagebox.showwarning(title="Oops", message="Podano nieprawidłową wartość w 'Cena za kilogram' lub 'Zużyto'.")
+
 
     # =================================================== HELPERS  ===========================================================
-    def check_spaces_in_text(self, text):
-
-        num_of_letters = len(text)
-
-        if text[0].isspace() or text[num_of_letters - 1].isspace():
-           # messagebox.showwarning("Oops", "Nazwa nie może zaczynać się spacją LUB kończyć się spacją.")
-            return True
-
     def load_table_data(self, table_data):
         for product in table_data:
             product_name = product["product_name"]
@@ -504,9 +485,6 @@ class AppGUI:
         ingredient_category = self.ingredient_type.get()
 
         return amount_used, ingredient_price, product_name, ingredient_name, ingredient_category
-
-
-
 
 
 

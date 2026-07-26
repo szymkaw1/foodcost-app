@@ -2,6 +2,7 @@
 from appGUI import AppGUI
 from Product import Ingredient
 from Data import Data
+from Validators import Validator
 
 
 product_info = Data()
@@ -18,52 +19,94 @@ interface = AppGUI(product_info)
 # zmiana wartosci foodcost, w oknie
 # wybieranie skladnika w trybie dodawania zeby automatycznie przypisalo nazwe produktu
 # lub wybranie tego za pomoca przycisku pod tabela, cos typu "Dodaj skladnik do receptury"
+# sprawdzenie czy skladnik znajduje sie obecnie w recepturze
 
 
-def check_if_float(field, field_name):
+def handle_recipe_name_validation(result_recipe_name_edit, new_name):
+    if result_recipe_name_edit is None:
+        return False
 
-    try:
-        converted_value = float(field)
-    except ValueError:
-        interface.show_wrong_input_warning(field_name)
+    if result_recipe_name_edit == "empty":
+        interface.show_empty_name_warning("receptury")
+        return False
 
-    else:
-        return converted_value
+    if result_recipe_name_edit == "too_long":
+        interface.show_name_too_long_warning("receptury")
+        return False
+
+    if result_recipe_name_edit == "same_name":
+        interface.show_name_already_used_warning("receptury")
+        return False
+
+    if result_recipe_name_edit == "spaces":
+        interface.show_name_has_spaces_warning("receptury")
+        return False
+
+    if new_name in product_info.product_data:
+        interface.show_name_already_used_warning("receptury")
+        return False
+
+    return True
+
+def handle_ingredient_name_validation(result_ingredient_name):
+    if result_ingredient_name == "empty":
+        interface.show_empty_name_warning("składnika")
+        return False
+
+    elif result_ingredient_name == "too_long":
+        interface.show_name_too_long_warning("składnika")
+        return False
+
+    elif result_ingredient_name == "spaces":
+        interface.show_name_has_spaces_warning("składnika")
+        return False
+
+    return True
+
+def handle_product_name_validation(result_product_name):
+    if result_product_name == "empty":
+        interface.show_empty_name_warning("receptury")
+        return False
+
+    elif result_product_name == "too_long":
+        interface.show_name_too_long_warning("receptury")
+        return False
+
+    elif result_product_name == "name_used":
+        interface.show_name_already_used_warning("receptury")
+        return False
+
+    elif result_product_name == "spaces":
+        interface.show_name_has_spaces_warning("receptury")
+        return False
+
+    return True
+
+def handle_ingredients_values_validation(validated_ingredient_values):
+    if validated_ingredient_values is None:
+        interface.show_must_be_num_warning()
+        return False
 
 
+    elif validated_ingredient_values == "non_positive_num":
+        interface.show_must_be_positive_warning()
+        return False
 
-def check_if_correct_data(amount_used, ingredient_price, quantity_in_package):
-    amount_used = check_if_float(amount_used, "Gramatura / Zużyto sztuk")
-    ingredient_price = check_if_float(ingredient_price, "Cena za kilogram / Koszt za paczkę")
-
-    if quantity_in_package is None:
-
-        if amount_used is None or ingredient_price is None: # is None, poniewaz w check_if_float() gdy wartosc nie byla liczba, to zwraca None
-            return None
-
-
-        if amount_used > 0 and ingredient_price > 0:
-            return amount_used, ingredient_price, quantity_in_package
-
-        else:
-            interface.show_must_be_positive_warning()
-            return None
-
-    else:
-        quantity_in_package = check_if_float(quantity_in_package, "Ilość w paczce")
-
-        if amount_used is None or ingredient_price is None or quantity_in_package is None:
-            return None
-        if amount_used > 0 and ingredient_price > 0 and quantity_in_package > 0:
-            return amount_used, ingredient_price, quantity_in_package
-
-        else:
-            interface.show_must_be_positive_warning()
-            return None
+    return True
 
 
 def create_ingredient():
     amount_used, ingredient_price, product_name, ingredient_name, ingredient_category = interface.get_values_from_entries()
+
+    result_ingredient_name = Validator.validate_ingredient_name(ingredient_name)
+
+    if not handle_ingredient_name_validation(result_ingredient_name):
+        return
+
+    result_product_name = Validator.validate_product_name(product_name)
+
+    if not handle_product_name_validation(result_product_name):
+        return
 
     if ingredient_category == "wagowy":
         quantity_in_package = None
@@ -71,14 +114,13 @@ def create_ingredient():
     else:
         quantity_in_package = interface.quantity_in_package_entry.get()
 
-    validated_data = check_if_correct_data(amount_used, ingredient_price, quantity_in_package)
+    validated_ingredient_values = Validator.validate_ingredients_values(amount_used, ingredient_price, quantity_in_package)
 
-    if validated_data is None:
+    if not handle_ingredients_values_validation(validated_ingredient_values):
         return
 
 
-
-    amount_used, ingredient_price, quantity_in_package  = validated_data # rozpakowanie krotki
+    amount_used, ingredient_price, quantity_in_package  = validated_ingredient_values # rozpakowanie krotki
 
     ingredient = Ingredient(name=ingredient_name, unit_price=ingredient_price, amount=amount_used,
                             ingredient_type=ingredient_category,
@@ -114,7 +156,7 @@ def edit_ingredient():
 
     ingredient, product_name = created_ingredient
 
-    product_info.edit_data(product_name,ingredient,old_ingredient_name)
+    product_info.edit_ingredient_data(product_name, ingredient, old_ingredient_name)
     product_info.save_to_json()
     interface.show_if_edited_info()
     reload_recipe_table()
@@ -141,8 +183,6 @@ def count_data():
 
     return table_data
 
-def check_if_file_empty():
-    return len(product_info.product_data) == 0
 
 def reload_recipe_table(show_warning=True):
     interface.clear_table_data(interface.table)
@@ -151,7 +191,7 @@ def reload_recipe_table(show_warning=True):
     interface.title_ingredients.configure(text="Składniki:")
 
 def load_recipe_table(show_warning=True):
-    if not check_if_file_empty():
+    if not Validator.validate_file_emptiness(product_info.product_data):
         table_data = count_data()
         interface.load_table_data(table_data)
     elif show_warning:
@@ -167,11 +207,10 @@ def del_ingredient_and_refresh():
         reload_recipe_table()
 
 
-
 def del_recipe_and_refresh():
-    if check_if_file_empty():
+    if Validator.validate_file_emptiness(product_info.product_data):
         interface.title_ingredients.configure(text="Składniki:")
-        interface.show_choose_product_info()
+        interface.show_choose_product_warning()
         return
 
     product_name = interface.get_selected_recipe('usunięcia.')
@@ -187,29 +226,21 @@ def del_recipe_and_refresh():
 
 
 def edit_name_and_refresh():
-    old_product_name = interface.get_selected_recipe("zmiany nazwy.")
+    current_name = interface.get_selected_recipe("zmiany nazwy.")
 
-    if not old_product_name:
+    if not current_name:
         return
 
-    new_product_name = interface.get_new_recipe_name(old_product_name)
+    new_name = interface.get_new_recipe_name()
 
+    result_recipe_name_edit = Validator.validate_recipe_name(new_name, current_name)
 
-    if new_product_name is not None:
+    if not handle_recipe_name_validation(result_recipe_name_edit, new_name):
+        return
 
-        if new_product_name not in product_info.product_data:
-            product_info.edit_product_name(old_product_name, new_product_name)
-            product_info.save_to_json()
-
-            reload_recipe_table()
-        else:
-            interface.show_name_already_used_info()
-
-
-
-
-
-
+    product_info.edit_product_name(current_name, new_name)
+    product_info.save_to_json()
+    reload_recipe_table()
 
 
 
@@ -225,62 +256,4 @@ interface.edit_recipe_name_button.configure(command=edit_name_and_refresh)
 
 
 
-
-
 interface.root.mainloop()
-
-
-
-
-
-
-
-
-
-# def operate_on_ingredient():
-#
-#     amount_used = interface.amount_used_entry.get()
-#     ingredient_price = interface.cost_entry.get()
-#     product_name = interface.name_entry.get()
-#     ingredient_name = interface.ingredient_entry.get()
-#     ingredient_category = interface.ingredient_type.get()
-#
-#     amount_used = check_if_float(amount_used, "Gramatura / Zużyto sztuk")
-#     ingredient_price = check_if_float(ingredient_price, "Cena za kilogram / Koszt za paczkę")
-#
-#     if ingredient_category == "wagowy":
-#         quantity_in_package = None
-#
-#         if amount_used is None or ingredient_price is None:
-#             return
-#
-#         if amount_used > 0 and ingredient_price > 0:
-#             ingredient = Ingredient(name=ingredient_name, unit_price=ingredient_price, amount=amount_used,
-#                                     ingredient_type=ingredient_category,
-#                                     quantity_in_package=quantity_in_package)
-#
-#         else:
-#             interface.show_must_be_positive_warning()
-#             return
-#
-#     if ingredient_category == "sztukowy":
-#         quantity_in_package = interface.quantity_in_package_entry.get()
-#         quantity_in_package = check_if_float(quantity_in_package, "Ilość w paczce")
-#
-#         if amount_used is None or ingredient_price is None or quantity_in_package is None:
-#             return
-#
-#         if amount_used > 0 and ingredient_price > 0 and quantity_in_package > 0:
-#             ingredient = Ingredient(name=ingredient_name, unit_price=ingredient_price, amount=amount_used,
-#                                 ingredient_type=ingredient_category,
-#                                 quantity_in_package=quantity_in_package)
-#
-#         else:
-#             interface.show_must_be_positive_warning()
-#             return
-#
-#     interface.show_if_added_info()
-#     interface.clear_entries()
-#
-#     product_info.add_data(product_name, ingredient)
-#
