@@ -90,12 +90,6 @@ class Data:
 
 
 
-    def add_data(self, product_name, ingredient):
-        if product_name not in self.product_data:
-            self.add_product(product_name, ingredient)
-
-        else:
-            self.add_ingredient(product_name, ingredient)
 
 
 
