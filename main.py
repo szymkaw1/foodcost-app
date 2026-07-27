@@ -129,7 +129,7 @@ def create_ingredient():
 
     return ingredient, product_name
 
-def add_product():
+def add_product_or_ingredient():
     created_ingredient = create_ingredient()
 
     if created_ingredient is  None:
@@ -137,12 +137,23 @@ def add_product():
 
     ingredient, product_name = created_ingredient
 
-    product_info.add_data(product_name, ingredient)
+    if product_name in product_info.product_data:
 
-    product_info.save_to_json()
-    interface.show_if_added_info()
-    interface.clear_entries()
-    reload_recipe_table()
+        if ingredient.name not in product_info.product_data[product_name]:
+            product_info.add_ingredient(product_name, ingredient)
+            product_info.save_to_json()
+            interface.show_if_added_info()
+            interface.clear_entries()
+            reload_recipe_table()
+        else:
+            interface.show_name_already_used_warning(ingredient.name)
+
+    elif product_name not in product_info.product_data:
+        product_info.add_product(product_name, ingredient)
+        product_info.save_to_json()
+        interface.show_if_added_info()
+        interface.clear_entries()
+        reload_recipe_table()
 
 
 
@@ -257,7 +268,7 @@ def edit_recipe_name_and_refresh():
 
 
 
-interface.add_recipe_button.configure(command=add_product)
+interface.add_recipe_button.configure(command=add_product_or_ingredient)
 interface.load_data_button.configure(command=reload_recipe_table)
 interface.save_data_button.configure(command=edit_ingredient)
 interface.del_ingredient_button.configure(command=del_ingredient_and_refresh)
