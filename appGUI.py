@@ -412,6 +412,7 @@ class AppGUI:
         messagebox.showwarning(title="Oops", message="Podano nieprawidłową wartość w 'Cena za kilogram' lub 'Zużyto'.")
 
 
+
     # =================================================== HELPERS  ===========================================================
     def load_table_data(self, table_data):
         for product in table_data:

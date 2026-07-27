@@ -85,7 +85,6 @@ class Data:
         self.product_data.update(new_product)
 
     def edit_ingredient_data(self, product_name, new_ingredient, old_ingredient_name):
-        if product_name in self.product_data:
             self.del_ingredient(old_ingredient_name, product_name)
             self.add_ingredient(product_name, new_ingredient)
 

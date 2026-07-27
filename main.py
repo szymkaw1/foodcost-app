@@ -156,10 +156,20 @@ def edit_ingredient():
 
     ingredient, product_name = created_ingredient
 
-    product_info.edit_ingredient_data(product_name, ingredient, old_ingredient_name)
-    product_info.save_to_json()
-    interface.show_if_edited_info()
-    reload_recipe_table()
+    if (
+            ingredient.name == old_ingredient_name or
+            ingredient.name not in product_info.product_data[product_name]
+    ):
+        product_info.edit_ingredient_data(product_name, ingredient, old_ingredient_name)
+        product_info.save_to_json()
+        interface.show_if_edited_info()
+        reload_recipe_table()
+
+    else:
+        interface.show_name_already_used_warning(ingredient.name)
+
+
+
 
 
 
@@ -225,7 +235,7 @@ def del_recipe_and_refresh():
     reload_recipe_table(show_warning=False)
 
 
-def edit_name_and_refresh():
+def edit_recipe_name_and_refresh():
     current_name = interface.get_selected_recipe("zmiany nazwy.")
 
     if not current_name:
@@ -252,7 +262,7 @@ interface.load_data_button.configure(command=reload_recipe_table)
 interface.save_data_button.configure(command=edit_ingredient)
 interface.del_ingredient_button.configure(command=del_ingredient_and_refresh)
 interface.del_recipe_button.configure(command=del_recipe_and_refresh)
-interface.edit_recipe_name_button.configure(command=edit_name_and_refresh)
+interface.edit_recipe_name_button.configure(command=edit_recipe_name_and_refresh)
 
 
 
