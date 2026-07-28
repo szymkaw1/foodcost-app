@@ -179,27 +179,22 @@ def edit_ingredient():
     else:
         interface.show_name_already_used_warning(ingredient.name)
 
-
-
-
-
-
 def count_data():
     table_data = []
     product_data = product_info.product_data
-    foodcost_percent_value = interface.get_foodcost_percent_value_from_user()
-    if foodcost_percent_value is not None:
-        for product_name in product_data:
-            ingredients_total_price = product_info.count_ingredients_price(product_name)
-            suggested_price = product_info.count_suggested_price(ingredients_total_price, foodcost_percent_value)
 
 
-            counted_data = {"product_name": product_name,
-                            "ingredients_total_price": ingredients_total_price,
-                            "suggested_price": suggested_price,
-                            "foodcost_percent_value": foodcost_percent_value}
+    for product_name in product_data:
+        ingredients_total_price = product_info.count_ingredients_price(product_name)
+        suggested_price = product_info.count_suggested_price(ingredients_total_price, interface.foodcost_value_from_user)
 
-            table_data.append(counted_data)
+
+        counted_data = {"product_name": product_name,
+                        "ingredients_total_price": ingredients_total_price,
+                        "suggested_price": suggested_price,
+                        "foodcost_percent_value": interface.foodcost_value_from_user}
+
+        table_data.append(counted_data)
 
 
     return table_data
@@ -268,13 +263,12 @@ def edit_recipe_name_and_refresh():
 
 
 
-interface.add_recipe_button.configure(command=add_product_or_ingredient)
-interface.load_data_button.configure(command=reload_recipe_table)
+interface.add_ingredient_button.configure(command=add_product_or_ingredient)
 interface.save_data_button.configure(command=edit_ingredient)
 interface.del_ingredient_button.configure(command=del_ingredient_and_refresh)
 interface.del_recipe_button.configure(command=del_recipe_and_refresh)
 interface.edit_recipe_name_button.configure(command=edit_recipe_name_and_refresh)
 
-
+reload_recipe_table()
 
 interface.root.mainloop()

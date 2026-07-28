@@ -12,15 +12,15 @@ class AppGUI:
         self.product_info = product_info
         self.selected_product_name = None
         self.edited_ingredient_name = None
-        self.foodcost_value_from_user = None
+        self.foodcost_value_from_user = 0.3
         self.create_window()
         self.create_product_frame()
         self.create_product_details()
         self.create_save_data_button()
-        self.create_recipe_button()
+        self.add_ingredient_button()
         self.create_product_table_frame()
         self.create_product_table()
-        self.create_load_data_button()
+
         self.create_ingredients_table_frame()
         self.create_ingredients_table()
         self.create_edit_ingredient_button()
@@ -28,6 +28,7 @@ class AppGUI:
         self.create_del_ingredient_button()
         self.create_del_recipe_button()
         self.create_edit_recipe_name_button()
+        self.add_recipe_button()
     # =================================================== WINDOW ===========================================================
 
     def create_window(self):
@@ -304,13 +305,18 @@ class AppGUI:
     # =================================================== BUTTONS CREATION ===========================================================
 
 
-    def create_recipe_button(self):
-        self.add_recipe_button = ctk.CTkButton(self.frame_product_details, text="Dodaj składnik", width=150,height=30, fg_color="#467235", corner_radius=5)
-        self.add_recipe_button.grid(row=6,column=1, padx=(0,30), pady=10, sticky='e')
+    def add_ingredient_button(self):
+        self.add_ingredient_button = ctk.CTkButton(self.frame_product_details, text="Dodaj składnik", width=150, height=30, fg_color="#467235", corner_radius=5)
+        self.add_ingredient_button.grid(row=6, column=1, padx=(0, 30), pady=10, sticky='e')
+
+    def add_recipe_button(self):
+        self.add_recipe_button = ctk.CTkButton(self.product_table_frame, text="Dodaj nazwę receptury", width=150,
+                                                   height=30, fg_color="#467235", corner_radius=5)
+        self.add_recipe_button.grid(row=6, column=1, padx=(0, 30), pady=10, sticky='e')
 
     def create_load_data_button(self):
-        self.load_data_button = ctk.CTkButton(self.product_table_frame, text="Wczytaj dane", width=150,height=30, fg_color="#467235", corner_radius=5)
-        self.load_data_button.grid(row=1,column=0, sticky='w', padx=(15,0), pady=(0,15))
+        self.load_data_button = ctk.CTkButton(self.root, text="Wczytaj dane", width=150,height=30, fg_color="#467235", corner_radius=5)
+        self.load_data_button.place(x=650, y=10)
 
     def create_edit_ingredient_button(self):
         self.edit_data_button = ctk.CTkButton(self.ingredients_table_frame, text="Edytuj składnik", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.set_edit_ingredient_panel)
@@ -465,7 +471,7 @@ class AppGUI:
         self.name_entry.configure(state="normal", fg_color=ENTRY_COLOR)
         self.name_label.configure(text_color="white")
         self.hide_button(self.save_data_button)
-        self.show_button(self.add_recipe_button)
+        self.show_button(self.add_ingredient_button)
 
 
 
@@ -474,7 +480,7 @@ class AppGUI:
         self.return_button.configure(state='enable')
         self.name_entry.configure(state="disable", fg_color="#495057")
         self.name_label.configure(text_color="#495057")
-        self.hide_button(self.add_recipe_button)
+        self.hide_button(self.add_ingredient_button)
         self.show_button(self.save_data_button)
 
 
