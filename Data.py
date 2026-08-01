@@ -73,24 +73,14 @@ class Data:
 
     # =================================== MAIN FUNCS ==================================================
 
-    def add_product(self, product_name, ingredient):
-        new_product = ({product_name: {ingredient.name: {
-            "amount": ingredient.amount,
-            "price": ingredient.ingredient_price,
-            "price/kg (price/package)": ingredient.unit_price,
-            "Type": ingredient.ingredient_type,
-            "quantity": ingredient.quantity_in_package}}
-        })
+    def add_product(self, product_name):
+        new_product = {product_name: {}}
 
         self.product_data.update(new_product)
 
     def edit_ingredient_data(self, product_name, new_ingredient, old_ingredient_name):
             self.del_ingredient(old_ingredient_name, product_name)
             self.add_ingredient(product_name, new_ingredient)
-
-
-
-
 
 
     def del_recipe(self, product_name):

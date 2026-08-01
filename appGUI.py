@@ -20,7 +20,6 @@ class AppGUI:
         self.add_ingredient_button()
         self.create_product_table_frame()
         self.create_product_table()
-
         self.create_ingredients_table_frame()
         self.create_ingredients_table()
         self.create_edit_ingredient_button()
@@ -29,6 +28,7 @@ class AppGUI:
         self.create_del_recipe_button()
         self.create_edit_recipe_name_button()
         self.add_recipe_button()
+        self.add_ingredient_to_recipe_button()
     # =================================================== WINDOW ===========================================================
 
     def create_window(self):
@@ -154,12 +154,30 @@ class AppGUI:
         selected = self.select_data(self.table)
 
         if selected is  None:
-            messagebox.showwarning("Oops", f"Najpierw wybierz produkt do {chosen_task}")
+            messagebox.showwarning("Oops", f"Najpierw wybierz recepturę do {chosen_task}")
             return False
 
         values = self.table.item(selected[0])
         product_name = str(values['values'][0])
+        self.selected_product_name = product_name
         return product_name
+
+    def set_add_ingredient_to_recipe(self):
+        self.return_to_add_prod()
+
+        self.clear_entries()
+        self.name_entry.delete(0, "end")
+
+        product_name = self.get_selected_recipe("dodania składnika.")
+
+        if not product_name:
+            return
+
+        self.name_entry.insert(0, product_name)
+        self.name_entry.configure(state="disable", fg_color="#495057")
+        self.name_label.configure(text_color="#495057")
+        self.title_add_prod.configure(text=f"Dodaj składnik do: {product_name}")
+
 
 
 
@@ -185,6 +203,7 @@ class AppGUI:
         quantity_in_package = ingredient_values['quantity']
         product_type = ingredient_values["Type"]
 
+        self.title_add_prod.configure(text=f"Edycja składnika: {product_name}")
         self.optionmenu.set(product_type)
         self.set_ingredient_type(product_type)
         self.name_entry.insert(0, product_name)
@@ -200,6 +219,7 @@ class AppGUI:
 
     def load_recipe_ingredients(self,event):
 
+
         self.clear_table_data(table_name=self.ingredient_table)
 
         selected = self.select_data(table_name=self.table)
@@ -210,9 +230,10 @@ class AppGUI:
 
         values = self.table.item(selected[0])
         product_name = str(values['values'][0])
-        self.selected_product_name = product_name # przypisanie
+        self.selected_product_name =  product_name
         product_data = self.product_info.product_data
 
+        self.title_ingredients.configure(text=f"Składniki: {product_name}")
 
         for ingredient, values in product_data[product_name].items():
             ingredient_name = ingredient
@@ -255,13 +276,15 @@ class AppGUI:
 
 
     def create_product_details(self):
-        self.title_add_prod = ctk.CTkLabel(self.root, text="Dodaj składnik do receptury", font=('TkDefaultFont', 15, "bold"))
+        self.title_add_prod = ctk.CTkLabel(self.root, text="Dodaj składnik do: ", font=('TkDefaultFont', 15, "bold"))
         self.title_add_prod.place(x=60,y=10)
 
         self.name_label = ctk.CTkLabel(self.frame_product_details, text="Nazwa produktu:")
-        self.name_label.grid(row=0,column=0,sticky='w',padx=30,pady=10)
+        # self.name_label.grid(row=0,column=0,sticky='w',padx=30,pady=10)
         self.name_entry = ctk.CTkEntry(self.frame_product_details, width=180, fg_color=ENTRY_COLOR)
-        self.name_entry.grid(row=0,column=1, sticky='w')
+        # self.name_entry.grid(row=0,column=1, sticky='w')
+        self.name_entry.configure(state="disable", fg_color="#495057")
+        self.name_label.configure(text_color="#495057")
 
 
         self.ingredient_type = ctk.StringVar()
@@ -310,9 +333,14 @@ class AppGUI:
         self.add_ingredient_button.grid(row=6, column=1, padx=(0, 30), pady=10, sticky='e')
 
     def add_recipe_button(self):
-        self.add_recipe_button = ctk.CTkButton(self.product_table_frame, text="Dodaj nazwę receptury", width=150,
+        self.add_recipe_button = ctk.CTkButton(self.product_table_frame, text="Dodaj recepturę", width=150,
                                                    height=30, fg_color="#467235", corner_radius=5)
-        self.add_recipe_button.grid(row=6, column=1, padx=(0, 30), pady=10, sticky='e')
+        self.add_recipe_button.grid(row=1, column=0, padx=(15, 0), pady=(0,15), sticky='w')
+
+    def add_ingredient_to_recipe_button(self):
+        self.add_ingredient_to_recipe_button = ctk.CTkButton(self.product_table_frame, text="Dodaj składnik do receptury", width=150,
+                                               height=30, fg_color="#467235", corner_radius=5)
+        self.add_ingredient_to_recipe_button.grid(row=1, column=0, padx=(175, 0), pady=(0, 15), sticky='w')
 
     def create_load_data_button(self):
         self.load_data_button = ctk.CTkButton(self.root, text="Wczytaj dane", width=150,height=30, fg_color="#467235", corner_radius=5)
@@ -339,7 +367,7 @@ class AppGUI:
 
 
     def create_del_recipe_button(self):
-        self.del_recipe_button = ctk.CTkButton(self.product_table_frame, text="Usuń recepturę", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.set_edit_ingredient_panel)
+        self.del_recipe_button = ctk.CTkButton(self.product_table_frame, text="Usuń recepturę", width=150, height=30, fg_color="#467235", corner_radius=5)
         self.del_recipe_button.grid(row=1,column=0, sticky='e', padx=(0,15), pady=(0,15))
 
     def create_edit_recipe_name_button(self):
@@ -374,7 +402,9 @@ class AppGUI:
         new_product_name = simpledialog.askstring(title="Nowa nazwa receptury", prompt="Podaj nową nazwę receptury.")
         return new_product_name
 
-
+    def get_recipe_name(self):
+        recipe_name = simpledialog.askstring(title="Dodaj nazwę receptury", prompt="Podaj nazwę receptury.")
+        return recipe_name
     # =================================================== DIALOGS ===========================================================
 
     def show_no_data_warning(self):
@@ -386,8 +416,8 @@ class AppGUI:
     def show_must_be_positive_warning(self):
         messagebox.showwarning(title="Oops", message="Wartości liczbowe muszą być większe niż 0.")
 
-    def show_if_added_info(self):
-        messagebox.showinfo(title="Świetnie!", message="Składnik został dodany.")
+    def show_if_added_info(self, item):
+        messagebox.showinfo(title="Świetnie!", message=f"{item} został dodany.")
 
     def show_if_edited_info(self):
         messagebox.showinfo(title="Świetnie!", message="Składnik został zmieniony.")

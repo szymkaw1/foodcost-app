@@ -7,7 +7,7 @@ class Validator:
 
 
     @staticmethod
-    def validate_recipe_name(new_name, current_name):
+    def validate_edit_recipe_name(new_name, current_name):
         if new_name is None:
             return None
 
@@ -21,6 +21,22 @@ class Validator:
             return "same_name"
 
         if Validator.validate_spaces_in_text(new_name):
+            return "spaces"
+
+        return "ok"
+
+    @staticmethod
+    def validate_add_recipe_name(recipe_name):
+        if recipe_name is None:
+            return None
+
+        if recipe_name == "":
+            return "empty"
+
+        if len(recipe_name) > 30:
+            return "too_long"
+
+        if Validator.validate_spaces_in_text(recipe_name):
             return "spaces"
 
         return "ok"
@@ -77,16 +93,16 @@ class Validator:
                 return "non_positive_num"
 
 
-    @staticmethod
-    def validate_product_name(product_name):
-        if product_name == "":
-            return "empty"
-
-        if len(product_name) > 30:
-            return "too_long"
-
-        if Validator.validate_spaces_in_text(product_name):
-            return "spaces"
+    # @staticmethod
+    # def validate_product_name(product_name):
+    #     if product_name == "":
+    #         return "empty"
+    #
+    #     if len(product_name) > 30:
+    #         return "too_long"
+    #
+    #     if Validator.validate_spaces_in_text(product_name):
+    #         return "spaces"
 
     @staticmethod
     def validate_ingredient_name(ingredient_name):

@@ -22,7 +22,7 @@ interface = AppGUI(product_info)
 # sprawdzenie czy skladnik znajduje sie obecnie w recepturze
 
 
-def handle_recipe_name_validation(result_recipe_name_edit, new_name):
+def handle_edit_recipe_name_validation(result_recipe_name_edit, new_name):
     if result_recipe_name_edit is None:
         return False
 
@@ -34,7 +34,7 @@ def handle_recipe_name_validation(result_recipe_name_edit, new_name):
         interface.show_name_too_long_warning("receptury")
         return False
 
-    if result_recipe_name_edit == "same_name":
+    if result_recipe_name_edit == "same_name": # same_name - czyli taka sama nazwa jak obecna
         interface.show_name_already_used_warning("receptury")
         return False
 
@@ -44,6 +44,29 @@ def handle_recipe_name_validation(result_recipe_name_edit, new_name):
 
     if new_name in product_info.product_data:
         interface.show_name_already_used_warning("receptury")
+        return False
+
+    return True
+
+
+def handle_add_recipe_name_validation(result_recipe_name_add, recipe_name):
+    if result_recipe_name_add is None:
+        return False
+
+    if result_recipe_name_add == "empty":
+        interface.show_empty_name_warning("receptury")
+        return False
+
+    if result_recipe_name_add == "too_long":
+        interface.show_name_too_long_warning("receptury")
+        return False
+
+    if recipe_name in product_info.product_data:
+        interface.show_name_already_used_warning("receptury")
+        return False
+
+    if result_recipe_name_add == "spaces":
+        interface.show_name_has_spaces_warning("receptury")
         return False
 
     return True
@@ -63,24 +86,24 @@ def handle_ingredient_name_validation(result_ingredient_name):
 
     return True
 
-def handle_product_name_validation(result_product_name):
-    if result_product_name == "empty":
-        interface.show_empty_name_warning("receptury")
-        return False
-
-    elif result_product_name == "too_long":
-        interface.show_name_too_long_warning("receptury")
-        return False
-
-    elif result_product_name == "name_used":
-        interface.show_name_already_used_warning("receptury")
-        return False
-
-    elif result_product_name == "spaces":
-        interface.show_name_has_spaces_warning("receptury")
-        return False
-
-    return True
+# def handle_product_name_validation(result_product_name):
+#     if result_product_name == "empty":
+#         interface.show_empty_name_warning("receptury")
+#         return False
+#
+#     elif result_product_name == "too_long":
+#         interface.show_name_too_long_warning("receptury")
+#         return False
+#
+#     elif result_product_name == "name_used":
+#         interface.show_name_already_used_warning("receptury")
+#         return False
+#
+#     elif result_product_name == "spaces":
+#         interface.show_name_has_spaces_warning("receptury")
+#         return False
+#
+#     return True
 
 def handle_ingredients_values_validation(validated_ingredient_values):
     if validated_ingredient_values is None:
@@ -101,11 +124,6 @@ def create_ingredient():
     result_ingredient_name = Validator.validate_ingredient_name(ingredient_name)
 
     if not handle_ingredient_name_validation(result_ingredient_name):
-        return
-
-    result_product_name = Validator.validate_product_name(product_name)
-
-    if not handle_product_name_validation(result_product_name):
         return
 
     if ingredient_category == "wagowy":
@@ -129,7 +147,23 @@ def create_ingredient():
 
     return ingredient, product_name
 
-def add_product_or_ingredient():
+
+def add_recipe():
+    recipe_name = interface.get_recipe_name()
+    result_recipe_name = Validator.validate_add_recipe_name(recipe_name)
+
+    if handle_add_recipe_name_validation(result_recipe_name, recipe_name):
+
+        product_info.add_product(recipe_name)
+        product_info.save_to_json()
+        interface.show_if_added_info("Produkt")
+        interface.clear_entries()
+        reload_recipe_table()
+
+
+
+
+def add_ingredient():
     created_ingredient = create_ingredient()
 
     if created_ingredient is  None:
@@ -142,18 +176,13 @@ def add_product_or_ingredient():
         if ingredient.name not in product_info.product_data[product_name]:
             product_info.add_ingredient(product_name, ingredient)
             product_info.save_to_json()
-            interface.show_if_added_info()
+            interface.show_if_added_info("Składnik")
             interface.clear_entries()
             reload_recipe_table()
         else:
             interface.show_name_already_used_warning(ingredient.name)
 
-    elif product_name not in product_info.product_data:
-        product_info.add_product(product_name, ingredient)
-        product_info.save_to_json()
-        interface.show_if_added_info()
-        interface.clear_entries()
-        reload_recipe_table()
+
 
 
 
@@ -174,6 +203,7 @@ def edit_ingredient():
         product_info.edit_ingredient_data(product_name, ingredient, old_ingredient_name)
         product_info.save_to_json()
         interface.show_if_edited_info()
+        interface.return_to_add_prod()
         reload_recipe_table()
 
     else:
@@ -249,9 +279,9 @@ def edit_recipe_name_and_refresh():
 
     new_name = interface.get_new_recipe_name()
 
-    result_recipe_name_edit = Validator.validate_recipe_name(new_name, current_name)
+    result_recipe_name_edit = Validator.validate_edit_recipe_name(new_name, current_name)
 
-    if not handle_recipe_name_validation(result_recipe_name_edit, new_name):
+    if not handle_edit_recipe_name_validation(result_recipe_name_edit, new_name):
         return
 
     product_info.edit_product_name(current_name, new_name)
@@ -263,12 +293,13 @@ def edit_recipe_name_and_refresh():
 
 
 
-interface.add_ingredient_button.configure(command=add_product_or_ingredient)
+interface.add_ingredient_button.configure(command=add_ingredient)
 interface.save_data_button.configure(command=edit_ingredient)
 interface.del_ingredient_button.configure(command=del_ingredient_and_refresh)
 interface.del_recipe_button.configure(command=del_recipe_and_refresh)
 interface.edit_recipe_name_button.configure(command=edit_recipe_name_and_refresh)
-
+interface.add_recipe_button.configure(command=add_recipe)
+interface.add_ingredient_to_recipe_button.configure(command=interface.set_add_ingredient_to_recipe)
 reload_recipe_table()
 
 interface.root.mainloop()
