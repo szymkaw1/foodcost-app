@@ -113,8 +113,9 @@ def handle_foodcost_value_validation(result_foodcost_value):
 
 
 def create_ingredient():
-    amount_used, ingredient_price, product_name, ingredient_name, ingredient_category = interface.get_values_from_entries()
+    amount_used, ingredient_price, ingredient_name, ingredient_category = interface.get_values_from_entries()
 
+    product_name = interface.selected_product_name
     result_ingredient_name = Validator.validate_ingredient_name(ingredient_name)
 
     if not handle_ingredient_name_validation(result_ingredient_name):
@@ -156,7 +157,6 @@ def add_recipe():
 
 
 
-
 def add_ingredient():
     created_ingredient = create_ingredient()
 
@@ -173,11 +173,9 @@ def add_ingredient():
             interface.show_if_added_info("Składnik")
             interface.clear_entries()
             reload_recipe_table()
+            interface.select_previous_item()
         else:
             interface.show_name_already_used_warning(ingredient.name)
-
-
-
 
 
 def edit_ingredient():
@@ -200,9 +198,10 @@ def edit_ingredient():
         interface.return_to_add_prod()
         reload_recipe_table()
 
+
     else:
         interface.show_name_already_used_warning(ingredient.name)
-
+    interface.select_previous_item()
 def count_data():
     table_data = []
     product_data = product_info.product_data
@@ -230,6 +229,8 @@ def reload_recipe_table(show_warning=True):
 
     interface.title_ingredients.configure(text="Składniki:")
 
+
+
 def load_recipe_table(show_warning=True):
     if not Validator.validate_file_emptiness(product_info.product_data):
         table_data = count_data()
@@ -245,6 +246,7 @@ def del_ingredient_and_refresh():
         product_info.save_to_json()
         interface.show_if_deleted_info("Składnik")
         reload_recipe_table()
+        interface.select_previous_item()
 
 
 def del_recipe_and_refresh():
@@ -282,6 +284,8 @@ def edit_recipe_name_and_refresh():
     product_info.save_to_json()
     reload_recipe_table()
 
+
+
 def change_foodcost_value():
     foodcost_value = interface.get_foodcost_percent_value_from_user()
 
@@ -293,6 +297,7 @@ def change_foodcost_value():
     else:
         interface.foodcost_value_from_user = round(foodcost_value / 100, 2)
         reload_recipe_table()
+        # interface.select_previous_item()
 
 
 
