@@ -86,24 +86,6 @@ def handle_ingredient_name_validation(result_ingredient_name):
 
     return True
 
-# def handle_product_name_validation(result_product_name):
-#     if result_product_name == "empty":
-#         interface.show_empty_name_warning("receptury")
-#         return False
-#
-#     elif result_product_name == "too_long":
-#         interface.show_name_too_long_warning("receptury")
-#         return False
-#
-#     elif result_product_name == "name_used":
-#         interface.show_name_already_used_warning("receptury")
-#         return False
-#
-#     elif result_product_name == "spaces":
-#         interface.show_name_has_spaces_warning("receptury")
-#         return False
-#
-#     return True
 
 def handle_ingredients_values_validation(validated_ingredient_values):
     if validated_ingredient_values is None:
@@ -116,6 +98,18 @@ def handle_ingredients_values_validation(validated_ingredient_values):
         return False
 
     return True
+
+def handle_foodcost_value_validation(result_foodcost_value):
+    if result_foodcost_value == "cancelled":
+        return False
+
+    elif result_foodcost_value == "out_of_range":
+        interface.show_out_of_range_warning()
+        return False
+
+    return True
+
+
 
 
 def create_ingredient():
@@ -288,6 +282,19 @@ def edit_recipe_name_and_refresh():
     product_info.save_to_json()
     reload_recipe_table()
 
+def change_foodcost_value():
+    foodcost_value = interface.get_foodcost_percent_value_from_user()
+
+    result_foodcost_value = Validator.validate_foodcost_value(foodcost_value)
+
+    if not handle_foodcost_value_validation(result_foodcost_value):
+        return
+
+    else:
+        interface.foodcost_value_from_user = round(foodcost_value / 100, 2)
+        reload_recipe_table()
+
+
 
 
 
@@ -300,6 +307,7 @@ interface.del_recipe_button.configure(command=del_recipe_and_refresh)
 interface.edit_recipe_name_button.configure(command=edit_recipe_name_and_refresh)
 interface.add_recipe_button.configure(command=add_recipe)
 interface.add_ingredient_to_recipe_button.configure(command=interface.set_add_ingredient_to_recipe)
+interface.change_foodcost_button.configure(command=change_foodcost_value)
 reload_recipe_table()
 
 interface.root.mainloop()

@@ -120,6 +120,19 @@ class Validator:
         return len(dict_to_validate) == 0
 
 
+    @staticmethod
+    def validate_foodcost_value(foodcost_value):
+        if foodcost_value is None:
+            return "cancelled"
+
+        if not 0 < foodcost_value <= 100:
+            return "out_of_range"
+
+
+
+
+
+
 
 
 

@@ -29,6 +29,7 @@ class AppGUI:
         self.create_edit_recipe_name_button()
         self.add_recipe_button()
         self.add_ingredient_to_recipe_button()
+        self.create_change_foodcost_button()
     # =================================================== WINDOW ===========================================================
 
     def create_window(self):
@@ -376,27 +377,16 @@ class AppGUI:
                                                      )
         self.edit_recipe_name_button.grid(row=1, column=0, sticky='e', padx=(0, 175), pady=(0, 15))
 
+    def create_change_foodcost_button(self):
+        self.change_foodcost_button = ctk.CTkButton(self.root, text="Zmiana % foodcost",width=150, height=20,
+                                                     fg_color="#34374C", corner_radius=5
+                                                     )
+        self.change_foodcost_button.place(x=1005, y=15)
     # =================================================== EXTRA FUNCTIONS ===========================================================
     def get_foodcost_percent_value_from_user(self):
+        foodcost_value = simpledialog.askinteger(title="Docelowy Food Cost (%)", prompt="Podaj oczekiwany Food Cost (%).")
 
-        while True:
-
-            if self.foodcost_value_from_user is None:
-                foodcost_value = simpledialog.askinteger(title="Docelowy Food Cost (%)", prompt="Podaj oczekiwany Food Cost (%).")
-
-
-
-                if foodcost_value == None:
-                    break
-
-                elif 0 < foodcost_value <= 100:
-                    self.foodcost_value_from_user = round(foodcost_value / 100, 2)
-                    return self.foodcost_value_from_user
-
-                else:
-                    messagebox.showwarning(title="Oops", message="Liczba musi być z przedziału od 1 do 100.")
-            else:
-                return self.foodcost_value_from_user
+        return foodcost_value
 
     def get_new_recipe_name(self):
         new_product_name = simpledialog.askstring(title="Nowa nazwa receptury", prompt="Podaj nową nazwę receptury.")
@@ -447,6 +437,11 @@ class AppGUI:
     def show_must_be_num_warning(self):
         messagebox.showwarning(title="Oops", message="Podano nieprawidłową wartość w 'Cena za kilogram' lub 'Zużyto'.")
 
+    def show_empty_foodcost_value_warning(self):
+        messagebox.showwarning(title="Oops", message="Pole nie może być puste.")
+
+    def show_out_of_range_warning(self):
+        messagebox.showwarning(title="Oops", message="Podana wartość musi należeć do przedziału 1–100.")
 
 
     # =================================================== HELPERS  ===========================================================
