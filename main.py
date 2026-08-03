@@ -116,6 +116,11 @@ def create_ingredient():
     amount_used, ingredient_price, ingredient_name, ingredient_category = interface.get_values_from_entries()
 
     product_name = interface.selected_product_name
+
+    if product_name is None:
+         interface.show_choose_recipe_warning()
+         return
+
     result_ingredient_name = Validator.validate_ingredient_name(ingredient_name)
 
     if not handle_ingredient_name_validation(result_ingredient_name):
@@ -139,7 +144,7 @@ def create_ingredient():
                             ingredient_type=ingredient_category,
                             quantity_in_package=quantity_in_package)
 
-
+    print(product_name)
     return ingredient, product_name
 
 
@@ -160,10 +165,12 @@ def add_recipe():
 def add_ingredient():
     created_ingredient = create_ingredient()
 
-    if created_ingredient is  None:
+
+    if created_ingredient is None:
         return
 
     ingredient, product_name = created_ingredient
+
 
     if product_name in product_info.product_data:
 
@@ -195,13 +202,15 @@ def edit_ingredient():
         product_info.edit_ingredient_data(product_name, ingredient, old_ingredient_name)
         product_info.save_to_json()
         interface.show_if_edited_info()
-        interface.return_to_add_prod()
+        interface.return_to_disabled_add_recipe_frame()
         reload_recipe_table()
 
 
     else:
         interface.show_name_already_used_warning(ingredient.name)
     interface.select_previous_item()
+
+
 def count_data():
     table_data = []
     product_data = product_info.product_data
