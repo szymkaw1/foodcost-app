@@ -1,75 +1,60 @@
 #  Food Cost App
 
-A desktop application for calculating recipe costs, suggested selling prices, and Food Cost percentage.
+A desktop application for calculating recipe costs and suggested selling prices.
 
-This project was created to solve a real problem in my own business. I wanted to build a dedicated application for managing recipe costs instead of calculating everything manually. I decided to build a tool that helps me manage recipe costs while improving my Python skills.
+I created this project to solve a real problem in my own food business. Instead of calculating recipe costs manually, I decided to build my own application. It also helps me improve my Python skills.
 
-The application is actively developed, and new features are added as I continue learning.
+Version 1.0 is the first completed desktop version of this project.
 
 ---
+
 
 # Why I built this project
 
-I run my own food business and wanted a simple application that would help me calculate recipe costs quickly and accurately.
+I wanted to create something more useful than another tutorial project.
 
-Rather than creating another tutorial project, I chose to build something that I could actually use every day. This project allows me to combine programming with a real business need.
+This application helps me calculate recipe costs faster and more accurately. At the same time, I can practice Python by building a real application.
 
-My long-term goal is to turn this into a complete restaurant cost management application.
+In the future I want to turn this project into a web application.
 
 ---
+# Version 1.0 - Desktop
+Version 1.0 is the first completed desktop version of this project.
+
+It includes all basic features for managing recipes, calculating recipe costs and suggested selling prices.
+
+The next step is to rebuild this application as a web application and continue adding new features.
 
 # Current Features
 
-- ✅ Add recipes
-- ✅ Add weight-based ingredients
-- ✅ Add piece-based ingredients
-- ✅ Automatic ingredient cost calculation
-- ✅ Calculate total recipe cost
-- ✅ Calculate suggested selling price
-- ✅ Calculate Food Cost percentage
-- ✅ Save data to JSON
-- ✅ Load saved recipes
-- ✅ Display recipes in a table
-- ✅ Display ingredients for the selected recipe
-- ✅ Edit ingredients
-- ✅ Delete ingredients and recipes
-- ✅ Change Food Cost percent value
-- 
-
+- Add recipes
+- Add ingredients
+- Edit ingredients
+- Delete recipes and ingredients
+- Calculate recipe cost
+- Calculate suggested selling price
+- Change Food Cost percentage
+- Input validation
+- Prevent duplicate names
+- Save and load data using JSON
+- Automatic table refresh
+- Confirmation before deleting data
+- Rename recipes
 ---
 # Planned Features
 
-This project is still under active development.
+### v2.0 (planned)
 
-### Recipe Management
+- Web version
+- SQLite database
+- Ingredient library
+- Copy ingredients between recipes
+- User accounts
+- Reports and export (PDF / CSV / Excel)
+- Search and filter recipes and ingredients
+- Price history
 
-- [ ] Duplicate recipes
-
-### Database
-
-- [ ] Replace JSON with SQLite
-- [ ] Price history
-- [ ] Ingredient search
-
-### Business Tools
-
-- [ ] Margin calculation
-- [ ] Selling price analysis
-- [ ] Profit calculation
-- [ ] Reports and statistics
-
-### Export
-
-- [ ] CSV export
-- [ ] Excel export
-- [ ] PDF export
- 
-### User Experience
-
-- [ ] Improved interface
-- [ ] Custom dialog windows
-- [ ] Better styling
-- [ ] Dark/Light theme support
+---
 
 # Technologies
 
@@ -82,17 +67,17 @@ This project is still under active development.
 
 ---
 
-# Project Structure
+# What I Learned
 
-```text
-Food Cost App
-│
-├── appGUI.py          # User interface
-├── Data.py            # Data storage and calculations
-├── Product.py         # Ingredient model
-├── main.py            # Application entry point
-├── product_data.json  # Stored recipes
-```
+While building this project I learned:
+
+- Object-Oriented Programming
+- Working with JSON
+- Building desktop applications
+- Input validation
+- Refactoring code
+- Using Git and GitHub
+- Organizing larger Python projects
 
 ---
 
@@ -125,35 +110,31 @@ python main.py
 ---
 
 # Screenshots
+### Alpha Version
+- Basic recipe management
+- Initial GUI
+- JSON storage
+
 ![img_1.png](img_1.png)
 
 ---
 
-# What I learned
+### v1.0 
+- Recipe and ingredient management
+- Full validation
+- Delete confirmation
+- Dynamic ingredient panel
+- Food Cost %
+- Selection restore
+- Improved UX
 
-While building this project I have been learning and practicing:
-
-- Object-Oriented Programming
-- Working with JSON files
-- Building desktop applications using CustomTkinter
-- Event handling
-- Organizing larger Python projects
-- Separating GUI from application logic
-- Refactoring code to reduce duplication
-- Input validation
+![v1.0.png](v1.0.png)
 
 ---
 
 # About this project
+This is the first completed version of my application.
 
-This is not a finished product.
-
-The goal is to continuously improve both the application and my programming skills. Instead of creating many small tutorial projects, I prefer building one larger application that gradually becomes more professional over time.
+I will continue developing it while learning new technologies. My next goal is to create a web version.
 
 ---
-
-# Author
-
-**Szymon Kawalerski**
-
-If you have any suggestions or feedback, feel free to open an Issue or contact me.
