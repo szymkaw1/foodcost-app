@@ -5,21 +5,12 @@ from Data import Data
 from Validators import Validator
 
 
-product_info = Data()
-interface = AppGUI(product_info)
+recipe_info = Data()
+interface = AppGUI(recipe_info)
 
 #TODO
-# SPRAWDZENIE CZY PRODUKT/SKLADNIK JEST JUZ NA LISCIE
-# w tabeli mozna wybrac wartosc procentowa foodcostu, dzieki temu oblicza to nam dla wartosci % dla reszty danych z tabeli (MOZE)
-# jak uzytkownik wpisze "," to zamienia na ".",
-#  zmiana nazwy produktu 11.07
-#  wybieranie skladnika z listy i dodawanie skladnika do niej
 # lista gotowych już składników, które można dodawać bez wpisywania
-# Potwierdzenie przed usunieciem
-# zmiana wartosci foodcost, w oknie
-# wybieranie skladnika w trybie dodawania zeby automatycznie przypisalo nazwe produktu
-# lub wybranie tego za pomoca przycisku pod tabela, cos typu "Dodaj skladnik do receptury"
-# sprawdzenie czy skladnik znajduje sie obecnie w recepturze
+
 
 
 def handle_edit_recipe_name_validation(result_recipe_name_edit, new_name):
@@ -42,7 +33,7 @@ def handle_edit_recipe_name_validation(result_recipe_name_edit, new_name):
         interface.show_name_has_spaces_warning("receptury")
         return False
 
-    if new_name in product_info.product_data:
+    if new_name in recipe_info.recipe_data:
         interface.show_name_already_used_warning("receptury")
         return False
 
@@ -61,7 +52,7 @@ def handle_add_recipe_name_validation(result_recipe_name_add, recipe_name):
         interface.show_name_too_long_warning("receptury")
         return False
 
-    if recipe_name in product_info.product_data:
+    if recipe_name in recipe_info.recipe_data:
         interface.show_name_already_used_warning("receptury")
         return False
 
@@ -115,10 +106,10 @@ def handle_foodcost_value_validation(result_foodcost_value):
 def create_ingredient():
     amount_used, ingredient_price, ingredient_name, ingredient_category = interface.get_values_from_entries()
 
-    product_name = interface.selected_product_name
+    recipe_name = interface.selected_recipe_name
 
-    if product_name is None:
-         interface.show_choose_recipe_warning()
+    if recipe_name is None:
+         interface.show_choose_recipe_del_warning()
          return
 
     result_ingredient_name = Validator.validate_ingredient_name(ingredient_name)
@@ -144,8 +135,8 @@ def create_ingredient():
                             ingredient_type=ingredient_category,
                             quantity_in_package=quantity_in_package)
 
-    print(product_name)
-    return ingredient, product_name
+
+    return ingredient, recipe_name
 
 
 def add_recipe():
@@ -154,9 +145,9 @@ def add_recipe():
 
     if handle_add_recipe_name_validation(result_recipe_name, recipe_name):
 
-        product_info.add_product(recipe_name)
-        product_info.save_to_json()
-        interface.show_if_added_info("Produkt")
+        recipe_info.add_recipe(recipe_name)
+        recipe_info.save_to_json()
+        interface.show_if_recipe_added_info()
         interface.clear_entries()
         reload_recipe_table()
 
@@ -169,15 +160,15 @@ def add_ingredient():
     if created_ingredient is None:
         return
 
-    ingredient, product_name = created_ingredient
+    ingredient, recipe_name = created_ingredient
 
 
-    if product_name in product_info.product_data:
+    if recipe_name in recipe_info.recipe_data:
 
-        if ingredient.name not in product_info.product_data[product_name]:
-            product_info.add_ingredient(product_name, ingredient)
-            product_info.save_to_json()
-            interface.show_if_added_info("Składnik")
+        if ingredient.name not in recipe_info.recipe_data[recipe_name]:
+            recipe_info.add_ingredient(recipe_name, ingredient)
+            recipe_info.save_to_json()
+            interface.show_if_ingredient_added_info()
             interface.clear_entries()
             reload_recipe_table()
             interface.select_previous_item()
@@ -193,14 +184,14 @@ def edit_ingredient():
     if created_ingredient is None:
         return
 
-    ingredient, product_name = created_ingredient
+    ingredient, recipe_name = created_ingredient
 
     if (
             ingredient.name == old_ingredient_name or
-            ingredient.name not in product_info.product_data[product_name]
+            ingredient.name not in recipe_info.recipe_data[recipe_name]
     ):
-        product_info.edit_ingredient_data(product_name, ingredient, old_ingredient_name)
-        product_info.save_to_json()
+        recipe_info.edit_ingredient_data(recipe_name, ingredient, old_ingredient_name)
+        recipe_info.save_to_json()
         interface.show_if_edited_info()
         interface.return_to_disabled_add_recipe_frame()
         reload_recipe_table()
@@ -213,15 +204,15 @@ def edit_ingredient():
 
 def count_data():
     table_data = []
-    product_data = product_info.product_data
+    recipe_data = recipe_info.recipe_data
 
 
-    for product_name in product_data:
-        ingredients_total_price = product_info.count_ingredients_price(product_name)
-        suggested_price = product_info.count_suggested_price(ingredients_total_price, interface.foodcost_value_from_user)
+    for recipe_name in recipe_data:
+        ingredients_total_price = recipe_info.count_ingredients_price(recipe_name)
+        suggested_price = recipe_info.count_suggested_price(ingredients_total_price, interface.foodcost_value_from_user)
 
 
-        counted_data = {"product_name": product_name,
+        counted_data = {"recipe_name": recipe_name,
                         "ingredients_total_price": ingredients_total_price,
                         "suggested_price": suggested_price,
                         "foodcost_percent_value": interface.foodcost_value_from_user}
@@ -232,48 +223,57 @@ def count_data():
     return table_data
 
 
-def reload_recipe_table(show_warning=True):
+def reload_recipe_table():
     interface.clear_table_data(interface.table)
-    load_recipe_table(show_warning)
+    load_recipe_table()
 
     interface.title_ingredients.configure(text="Składniki:")
 
 
 
-def load_recipe_table(show_warning=True):
-    if not Validator.validate_file_emptiness(product_info.product_data):
+def load_recipe_table():
+    if not Validator.validate_file_emptiness(recipe_info.recipe_data):
         table_data = count_data()
         interface.load_table_data(table_data)
-    elif show_warning:
-        interface.show_no_data_warning()
+
 
 def del_ingredient_and_refresh():
+
     result = interface.get_selected_ingredients()
     if result:
-        old_ingredient_name, product_name = result
-        product_info.del_ingredient(old_ingredient_name, product_name)
-        product_info.save_to_json()
-        interface.show_if_deleted_info("Składnik")
-        reload_recipe_table()
-        interface.select_previous_item()
+        user_answer = interface.confirm_user_deletion()
+
+        if user_answer:
+            old_ingredient_name, recipe_name = result
+            recipe_info.del_ingredient(old_ingredient_name, recipe_name)
+            recipe_info.save_to_json()
+            interface.show_if_ingredient_deleted_info()
+            reload_recipe_table()
+            interface.select_previous_item()
 
 
 def del_recipe_and_refresh():
-    if Validator.validate_file_emptiness(product_info.product_data):
+
+    if Validator.validate_file_emptiness(recipe_info.recipe_data):
         interface.title_ingredients.configure(text="Składniki:")
-        interface.show_choose_product_warning()
+        interface.show_choose_recipe_warning()
         return
 
-    product_name = interface.get_selected_recipe('usunięcia.')
 
-    if not product_name:
+    recipe_name = interface.get_selected_recipe('usunięcia.')
+
+    if not recipe_name:
         return
 
-    product_info.del_recipe(product_name)
-    product_info.save_to_json()
-    interface.show_if_deleted_info("Produkt")
+    user_answer = interface.confirm_user_deletion()
 
-    reload_recipe_table(show_warning=False)
+    if user_answer:
+
+        recipe_info.del_recipe(recipe_name)
+        recipe_info.save_to_json()
+        interface.show_if_recipe_deleted_info()
+
+        reload_recipe_table()
 
 
 def edit_recipe_name_and_refresh():
@@ -289,8 +289,8 @@ def edit_recipe_name_and_refresh():
     if not handle_edit_recipe_name_validation(result_recipe_name_edit, new_name):
         return
 
-    product_info.edit_product_name(current_name, new_name)
-    product_info.save_to_json()
+    recipe_info.edit_recipe_name(current_name, new_name)
+    recipe_info.save_to_json()
     reload_recipe_table()
 
 
@@ -306,7 +306,7 @@ def change_foodcost_value():
     else:
         interface.foodcost_value_from_user = round(foodcost_value / 100, 2)
         reload_recipe_table()
-        # interface.select_previous_item()
+
 
 
 

@@ -8,19 +8,19 @@ from tkinter import messagebox
 ENTRY_COLOR = "#2E4540"
 
 class AppGUI:
-    def __init__(self, product_info):
-        self.product_info = product_info
-        self.selected_product_name = None
+    def __init__(self, recipe_info):
+        self.recipe_info = recipe_info
+        self.selected_recipe_name = None
         self.edited_ingredient_name = None
         self.foodcost_value_from_user = 0.3
         self.create_window()
-        self.create_product_frame()
-        self.create_product_details()
+        self.create_recipe_frame()
+        self.create_recipe_details()
         self.create_save_data_button()
         self.create_return_button()
         self.add_ingredient_button()
-        self.create_product_table_frame()
-        self.create_product_table()
+        self.create_recipe_table_frame()
+        self.create_recipe_table()
         self.create_ingredients_table_frame()
         self.create_ingredients_table()
         self.create_edit_ingredient_button()
@@ -41,38 +41,32 @@ class AppGUI:
         ctk.set_appearance_mode("dark")
 
     # =================================================== FRAMES ===========================================================
-    def create_product_frame(self):
-        self.frame_product_details = ctk.CTkFrame(self.root, corner_radius=10,
-                                                    width=375,height=340,border_width=1,border_color="grey"
-                                       )
-        self.frame_product_details.grid(column=1,row=0,padx=30,pady=40)
-        self.frame_product_details.grid_propagate(False) # dzieki temu wielkosc frame jest taka jak ustalono wyzej, nie dostosowuje sie do ilosci widgetow
-        #self.frame_product_details.grid_columnconfigure(0, weight=1) # powieksza kolumne, tak jak columnspan powieksza widget
+    def create_recipe_frame(self):
+        self.frame_recipe_details = ctk.CTkFrame(self.root, corner_radius=10,
+                                                 width=375, height=340, border_width=1, border_color="grey"
+                                                 )
+        self.frame_recipe_details.grid(column=1, row=0, padx=30, pady=40)
+        self.frame_recipe_details.grid_propagate(False) # dzieki temu wielkosc frame jest taka jak ustalono wyzej, nie dostosowuje sie do ilosci widgetow
 
-    def create_product_table_frame(self):
-        self.product_table_frame = ctk.CTkFrame(self.root, corner_radius=10, width=730, height=340, border_color="grey", border_width=1)
-        self.product_table_frame.grid(row=0, column=2, padx=5,pady=40)
-        self.product_table_frame.grid_propagate(False)
+
+    def create_recipe_table_frame(self):
+        self.recipe_table_frame = ctk.CTkFrame(self.root, corner_radius=10, width=730, height=340, border_color="grey", border_width=1)
+        self.recipe_table_frame.grid(row=0, column=2, padx=5, pady=40)
+        self.recipe_table_frame.grid_propagate(False)
 
     def create_ingredients_table_frame(self):
         self.ingredients_table_frame = ctk.CTkFrame(self.root, corner_radius=10, width=730, height=340, border_color="grey", border_width=1)
         self.ingredients_table_frame.grid(row=1,column=2,padx=5,pady=(0,40))
-        self.product_table_frame.grid_propagate(False)
+        self.recipe_table_frame.grid_propagate(False)
 
-    def create_copy_frame(self):
-        self.copy_frame = ctk.CTkFrame(self.root, corner_radius=10,
-                                                  width=375, height=340, border_width=1, border_color="grey"
-                                                  )
-        self.copy_frame.grid(column=1, row=1, padx=30, pady=(0,40))
-        self.copy_frame.grid_propagate(False)
 
     # =================================================== CREATE TABLES ===========================================================
 
-    def create_product_table(self):
+    def create_recipe_table(self):
         self.title_recipe = ctk.CTkLabel(self.root, text="Receptury", font=('TkDefaultFont', 15, "bold"))
         self.title_recipe.place(x=470, y=10)
 
-        self.table = ttk.Treeview(self.product_table_frame,height=19)
+        self.table = ttk.Treeview(self.recipe_table_frame, height=19)
         self.table.grid(column=0, row=0, padx=20, pady=20)
 
         self.table['columns'] = ("name", "cost", "price", "foodcost")
@@ -88,10 +82,7 @@ class AppGUI:
         self.table.column("price", width=262)
         self.table.column("foodcost", width=262)
 
-        # self.style = ttk.Style()
-        # self.style.theme_use("clam")
-        # self.style.configure("Treeview")
-        # self.style.configure("Treeview.Heading")
+
 
         self.table.bind("<<TreeviewSelect>>", self.load_recipe_ingredients)
 
@@ -116,15 +107,15 @@ class AppGUI:
         self.ingredient_table.column("unit_cost", width=209)
         self.ingredient_table.column("ingredient_cost", width=209)
 
-        #self.ingredient_table.bind("<<TreeviewSelect>>", self.edit_ingredient)
+
 
     # ===================================================  TABLE INSERTS ===========================================================
 
-    def insert_to_recipes(self, product_name, ingredients_total_price, suggested_price, foodcost_percent_value):
+    def insert_to_recipes(self, recipe_name, ingredients_total_price, suggested_price, foodcost_percent_value):
 
         self.table.insert("", "end",
                                    values=(
-                                       product_name,
+                                       recipe_name,
                                        ingredients_total_price,
                                        suggested_price,
                                        foodcost_percent_value
@@ -133,8 +124,8 @@ class AppGUI:
 
 
 
-    def insert_ingredients(self, product_name, ingredient_name, amount_used, unit, unit_cost, ingredient_cost):
-        self.title_ingredients.configure(text=f"Składniki: {product_name}")
+    def insert_ingredients(self, recipe_name, ingredient_name, amount_used, unit, unit_cost, ingredient_cost):
+        self.title_ingredients.configure(text=f"Składniki: {recipe_name}")
         self.ingredient_table.insert("", "end", values=(ingredient_name,
                                                         amount_used,
                                                         unit,
@@ -156,22 +147,26 @@ class AppGUI:
 
         values = self.ingredient_table.item(selected[0])
         old_ingredient_name = values['values'][0]
-        product_name = self.selected_product_name
+        recipe_name = self.selected_recipe_name
 
-        return old_ingredient_name, product_name
+        return old_ingredient_name, recipe_name
 
     def select_previous_item(self):
         items_id = self.table.get_children()
 
-        selected_product_id = None
+
+        selected_recipe_id = None
 
         for id in items_id:
             values = self.table.item(id)
-            selected_product = values['values'][0]
-            if selected_product == self.selected_product_name:
-                selected_product_id = id
+            selected_recipe = str(values['values'][0])
 
-        self.table.selection_set(selected_product_id)
+            if selected_recipe == self.selected_recipe_name:
+                selected_recipe_id = id
+
+        if selected_recipe_id is not None:
+
+            self.table.selection_set(selected_recipe_id)
 
     def get_selected_recipe(self,chosen_task):
         selected = self.select_data(self.table)
@@ -181,22 +176,22 @@ class AppGUI:
             return False
 
         values = self.table.item(selected[0])
-        product_name = str(values['values'][0])
-        self.selected_product_name = product_name
+        selected_recipe = str(values['values'][0])
+        self.selected_recipe_name = selected_recipe
 
-        return product_name
+        return selected_recipe
 
     def set_add_ingredient_to_recipe(self):
         self.return_to_disabled_add_recipe_frame()
 
         self.clear_entries()
 
-        product_name = self.get_selected_recipe("dodania składnika.")
+        recipe_name = self.get_selected_recipe("dodania składnika.")
 
-        if not product_name:
+        if not recipe_name:
             return
 
-        self.title_add_prod.configure(text=f"Dodaj składnik do: {product_name}")
+        self.title_add_prod.configure(text=f"Dodaj składnik do: {recipe_name}")
         self.return_button.configure(state='enable')
         self.switch_on_recipe_frame()
 
@@ -215,23 +210,23 @@ class AppGUI:
         values = self.ingredient_table.item(selected[0]) # zwraca słownik
         ingredient_name = str(values['values'][0])
 
-        product_name = self.selected_product_name
+        recipe_name = self.selected_recipe_name
         self.edited_ingredient_name = ingredient_name
 
-        ingredient_values = self.product_info.get_ingredient(product_name, ingredient_name)
+        ingredient_values = self.recipe_info.get_ingredient(recipe_name, ingredient_name)
         ingredient_price = ingredient_values['price/kg (price/package)']
         amount_used = ingredient_values['amount']
         quantity_in_package = ingredient_values['quantity']
-        product_type = ingredient_values["Type"]
+        recipe_type = ingredient_values["Type"]
 
-        self.title_add_prod.configure(text=f"Edycja składnika: {product_name}")
-        self.optionmenu.set(product_type)
-        self.set_ingredient_type(product_type)
+        self.title_add_prod.configure(text=f"Edycja składnika: {recipe_name}")
+        self.optionmenu.set(recipe_type)
+        self.set_ingredient_type(recipe_type)
         self.ingredient_entry.insert(0, ingredient_name)
         self.cost_entry.insert(0, ingredient_price)
         self.amount_used_entry.insert(0, amount_used)
 
-        if product_type == "sztukowy":
+        if recipe_type == "sztukowy":
             self.quantity_in_package_entry.insert(0, quantity_in_package)
 
         self.switch_to_edit_mode()
@@ -251,13 +246,13 @@ class AppGUI:
             return
 
         values = self.table.item(selected[0])
-        product_name = str(values['values'][0])
-        self.selected_product_name =  product_name
-        product_data = self.product_info.product_data
+        recipe_name = str(values['values'][0])
+        self.selected_recipe_name =  recipe_name
+        recipe_data = self.recipe_info.recipe_data
 
-        self.title_ingredients.configure(text=f"Składniki: {product_name}")
+        self.title_ingredients.configure(text=f"Składniki: {recipe_name}")
 
-        for ingredient, values in product_data[product_name].items():
+        for ingredient, values in recipe_data[recipe_name].items():
             ingredient_name = ingredient
             amount_used = values['amount']
             unit_cost = str(values["price/kg (price/package)"])
@@ -272,7 +267,7 @@ class AppGUI:
                 unit_cost += " zł/kg"
 
 
-            self.insert_ingredients(product_name, ingredient_name, amount_used, unit, unit_cost, ingredient_cost)
+            self.insert_ingredients(recipe_name, ingredient_name, amount_used, unit, unit_cost, ingredient_cost)
 
 
     def set_ingredient_type(self, current_type):
@@ -294,47 +289,47 @@ class AppGUI:
             self.weight_unit_label.configure(text="szt")
             self.weight_unit_label.grid(padx=5)
 
-    # =================================================== ADDING PRODUCT CREATION  ===========================================================
+    # =================================================== ADDING RECIPE CREATION  ===========================================================
 
 
-    def create_product_details(self):
+    def create_recipe_details(self):
         self.title_add_prod = ctk.CTkLabel(self.root, text="Dodaj składnik do: ", font=('TkDefaultFont', 15, "bold"))
         self.title_add_prod.place(x=60,y=10)
 
 
         self.ingredient_type = ctk.StringVar()
-        self.option_label = ctk.CTkLabel(self.frame_product_details, text="Rodzaj składnika:")
+        self.option_label = ctk.CTkLabel(self.frame_recipe_details, text="Rodzaj składnika:")
         self.option_label.grid(row=2, column=0, sticky='w', padx=30, pady=10)
-        self.optionmenu = ctk.CTkOptionMenu(self.frame_product_details, values=["wagowy", "sztukowy"], variable=self.ingredient_type, width=180,
+        self.optionmenu = ctk.CTkOptionMenu(self.frame_recipe_details, values=["wagowy", "sztukowy"], variable=self.ingredient_type, width=180,
                                             fg_color=ENTRY_COLOR,
                                             command=self.set_ingredient_type)
         self.optionmenu.grid(row=2,column=1,sticky='w')
         self.optionmenu.set("wagowy")
 
 
-        self.ingredient_label = ctk.CTkLabel(self.frame_product_details, text="Nazwa składnika:")
+        self.ingredient_label = ctk.CTkLabel(self.frame_recipe_details, text="Nazwa składnika:")
         self.ingredient_label.grid(row=1,column=0, sticky='w', padx=30, pady=15)
-        self.ingredient_entry = ctk.CTkEntry(self.frame_product_details, width=180, fg_color=ENTRY_COLOR)
+        self.ingredient_entry = ctk.CTkEntry(self.frame_recipe_details, width=180, fg_color=ENTRY_COLOR)
         self.ingredient_entry.grid(row=1, column=1, sticky='w')
-        self.cost_label = ctk.CTkLabel(self.frame_product_details, text="Cena za kilogram:")
+        self.cost_label = ctk.CTkLabel(self.frame_recipe_details, text="Cena za kilogram:")
         self.cost_label.grid(row=3, column=0, sticky='w', padx=30, pady=15)
-        self.cost_entry = ctk.CTkEntry(self.frame_product_details, width=150, fg_color=ENTRY_COLOR)
+        self.cost_entry = ctk.CTkEntry(self.frame_recipe_details, width=150, fg_color=ENTRY_COLOR)
         self.cost_entry.grid(row=3, column=1, sticky='w')
-        self.currency_label = ctk.CTkLabel(self.frame_product_details, text="zł", anchor='w')
+        self.currency_label = ctk.CTkLabel(self.frame_recipe_details, text="zł", anchor='w')
         self.currency_label.grid(row=3,column=1, sticky='e', padx=10)
 
-        self.amount_used_label = ctk.CTkLabel(self.frame_product_details, text="Zużyto:")
+        self.amount_used_label = ctk.CTkLabel(self.frame_recipe_details, text="Zużyto:")
         self.amount_used_label.grid(row=4, column=0, sticky='w', padx=30, pady=15)
-        self.amount_used_entry = ctk.CTkEntry(self.frame_product_details, width=150, fg_color=ENTRY_COLOR)
+        self.amount_used_entry = ctk.CTkEntry(self.frame_recipe_details, width=150, fg_color=ENTRY_COLOR)
         self.amount_used_entry.grid(row=4, column=1, sticky='w')
-        self.weight_unit_label = ctk.CTkLabel(self.frame_product_details, text="g", anchor='w')
+        self.weight_unit_label = ctk.CTkLabel(self.frame_recipe_details, text="g", anchor='w')
         self.weight_unit_label.grid(row=4, column=1, sticky='e',padx=10)
 
-        self.quantity_in_package_label = ctk.CTkLabel(self.frame_product_details, text="Ilość w paczce:")
+        self.quantity_in_package_label = ctk.CTkLabel(self.frame_recipe_details, text="Ilość w paczce:")
         self.quantity_in_package_label.grid(row=5, column=0, sticky='w', padx=30, pady=15)
-        self.quantity_in_package_entry = ctk.CTkEntry(self.frame_product_details, width=150, fg_color=ENTRY_COLOR)
+        self.quantity_in_package_entry = ctk.CTkEntry(self.frame_recipe_details, width=150, fg_color=ENTRY_COLOR)
         self.quantity_in_package_entry.grid(row=5, column=1, sticky='w')
-        self.piece_unit_label = ctk.CTkLabel(self.frame_product_details, text="szt", anchor='w')
+        self.piece_unit_label = ctk.CTkLabel(self.frame_recipe_details, text="szt", anchor='w')
         self.piece_unit_label.grid(row=5, column=1, sticky='e', padx=5)
 
         self.quantity_in_package_entry.configure(state="disabled", fg_color="#495057")
@@ -344,33 +339,30 @@ class AppGUI:
 
 
     def add_ingredient_button(self):
-        self.add_ingredient_button = ctk.CTkButton(self.frame_product_details, text="Dodaj składnik", width=150, height=30, fg_color="#467235", corner_radius=5)
+        self.add_ingredient_button = ctk.CTkButton(self.frame_recipe_details, text="Dodaj składnik", width=150, height=30, fg_color="#467235", corner_radius=5)
         self.add_ingredient_button.grid(row=6, column=1, padx=(0, 30), pady=20, sticky='e')
 
     def add_recipe_button(self):
-        self.add_recipe_button = ctk.CTkButton(self.product_table_frame, text="Dodaj recepturę", width=150,
-                                                   height=30, fg_color="#467235", corner_radius=5)
+        self.add_recipe_button = ctk.CTkButton(self.recipe_table_frame, text="Dodaj recepturę", width=150,
+                                               height=30, fg_color="#467235", corner_radius=5)
         self.add_recipe_button.grid(row=1, column=0, padx=(15, 0), pady=(0,15), sticky='w')
 
     def add_ingredient_to_recipe_button(self):
-        self.add_ingredient_to_recipe_button = ctk.CTkButton(self.product_table_frame, text="Dodaj składnik do receptury", width=150,
-                                               height=30, fg_color="#467235", corner_radius=5)
+        self.add_ingredient_to_recipe_button = ctk.CTkButton(self.recipe_table_frame, text="Dodaj składnik do receptury", width=150,
+                                                             height=30, fg_color="#467235", corner_radius=5)
         self.add_ingredient_to_recipe_button.grid(row=1, column=0, padx=(175, 0), pady=(0, 15), sticky='w')
 
-    def create_load_data_button(self):
-        self.load_data_button = ctk.CTkButton(self.root, text="Wczytaj dane", width=150,height=30, fg_color="#467235", corner_radius=5)
-        self.load_data_button.place(x=650, y=10)
 
     def create_edit_ingredient_button(self):
         self.edit_data_button = ctk.CTkButton(self.ingredients_table_frame, text="Edytuj składnik", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.set_edit_ingredient_panel)
         self.edit_data_button.grid(row=1,column=0, sticky='w', padx=(15,0), pady=(0,15))
 
     def create_return_button(self):
-        self.return_button = ctk.CTkButton(self.frame_product_details, state="disabled", text="Powrót", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.return_to_disabled_add_recipe_frame)
+        self.return_button = ctk.CTkButton(self.frame_recipe_details, state="disabled", text="Powrót", width=150, height=30, fg_color="#467235", corner_radius=5, command=self.return_to_disabled_add_recipe_frame)
         self.return_button.grid(row=6,column=0, sticky='e', padx=(30,5), pady=10)
 
     def create_save_data_button(self):
-        self.save_data_button = ctk.CTkButton(self.frame_product_details, text="Zapisz zmiany", width=150, height=30, fg_color="#467235", corner_radius=5)
+        self.save_data_button = ctk.CTkButton(self.frame_recipe_details, text="Zapisz zmiany", width=150, height=30, fg_color="#467235", corner_radius=5)
         self.save_data_button.grid(row=6, column=1, padx=(0, 30), pady=10, sticky='e')
         self.hide_button(self.save_data_button)
 
@@ -382,11 +374,11 @@ class AppGUI:
 
 
     def create_del_recipe_button(self):
-        self.del_recipe_button = ctk.CTkButton(self.product_table_frame, text="Usuń recepturę", width=150, height=30, fg_color="#467235", corner_radius=5)
+        self.del_recipe_button = ctk.CTkButton(self.recipe_table_frame, text="Usuń recepturę", width=150, height=30, fg_color="#467235", corner_radius=5)
         self.del_recipe_button.grid(row=1,column=0, sticky='e', padx=(0,15), pady=(0,15))
 
     def create_edit_recipe_name_button(self):
-        self.edit_recipe_name_button = ctk.CTkButton(self.product_table_frame, text="Zmień nazwę receptury", width=150, height=30,
+        self.edit_recipe_name_button = ctk.CTkButton(self.recipe_table_frame, text="Zmień nazwę receptury", width=150, height=30,
                                                      fg_color="#467235", corner_radius=5
                                                      )
         self.edit_recipe_name_button.grid(row=1, column=0, sticky='e', padx=(0, 175), pady=(0, 15))
@@ -403,8 +395,8 @@ class AppGUI:
         return foodcost_value
 
     def get_new_recipe_name(self):
-        new_product_name = simpledialog.askstring(title="Nowa nazwa receptury", prompt="Podaj nową nazwę receptury.")
-        return new_product_name
+        new_recipe_name = simpledialog.askstring(title="Nowa nazwa receptury", prompt="Podaj nową nazwę receptury.")
+        return new_recipe_name
 
     def get_recipe_name(self):
         recipe_name = simpledialog.askstring(title="Dodaj nazwę receptury", prompt="Podaj nazwę receptury.")
@@ -420,17 +412,24 @@ class AppGUI:
     def show_must_be_positive_warning(self):
         messagebox.showwarning(title="Oops", message="Wartości liczbowe muszą być większe niż 0.")
 
-    def show_if_added_info(self, item):
-        messagebox.showinfo(title="Świetnie!", message=f"{item} został dodany.")
+    def show_if_ingredient_added_info(self):
+        messagebox.showinfo(title="Świetnie!", message="Składnik został dodany.")
+
+    def show_if_recipe_added_info(self):
+        messagebox.showinfo(title="Świetnie!", message="Receptura została dodana.")
+
 
     def show_if_edited_info(self):
         messagebox.showinfo(title="Świetnie!", message="Składnik został zmieniony.")
 
-    def show_if_deleted_info(self, item_to_delete):
-        messagebox.showinfo("Świetnie!", f"{item_to_delete} został usunięty.")
+    def show_if_ingredient_deleted_info(self):
+        messagebox.showinfo("Świetnie!", "Składnik został usunięty.")
 
-    def show_choose_product_warning(self):
-        messagebox.showwarning("Oops", "Najpierw wybierz produkt do usunięcia.")
+    def show_if_recipe_deleted_info(self):
+        messagebox.showinfo("Świetnie!", "Receptura została usunięta.")
+
+    def show_choose_recipe_del_warning(self):
+        messagebox.showwarning("Oops", "Najpierw wybierz recepturę do usunięcia.")
 
     def show_name_already_used_warning(self, name):
         messagebox.showwarning("Oops", f"Podana nazwa {name} jest już zajęta.")
@@ -457,18 +456,22 @@ class AppGUI:
     def show_out_of_range_warning(self):
         messagebox.showwarning(title="Oops", message="Podana wartość musi należeć do przedziału 1–100.")
 
-    def show_choose_recipe_warning(self):
+    def show_choose_recipe_del_warning(self):
         messagebox.showwarning(title="Oops", message="Nie wybrano receptury.")
+
+    def confirm_user_deletion(self):
+        user_answer = messagebox.askyesno(title="Usuwanie", message="Czy jesteś pewien usunięcia?")
+        return user_answer
     # =================================================== HELPERS  ===========================================================
     def load_table_data(self, table_data):
-        for product in table_data:
-            product_name = product["product_name"]
-            ingredients_total_price = product["ingredients_total_price"]
-            suggested_price = product["suggested_price"]
-            foodcost_percent_value = product["foodcost_percent_value"]
+        for recipe in table_data:
+            recipe_name = recipe["recipe_name"]
+            ingredients_total_price = recipe["ingredients_total_price"]
+            suggested_price = recipe["suggested_price"]
+            foodcost_percent_value = recipe["foodcost_percent_value"]
 
 
-            self.insert_to_recipes(product_name, ingredients_total_price, suggested_price,
+            self.insert_to_recipes(recipe_name, ingredients_total_price, suggested_price,
                                     round(foodcost_percent_value * 100))
 
 
@@ -544,7 +547,7 @@ class AppGUI:
     def get_values_from_entries(self):
         amount_used = self.amount_used_entry.get()
         ingredient_price = self.cost_entry.get()
-        #product_name = self.name_entry.get()
+
         ingredient_name = self.ingredient_entry.get()
         ingredient_category = self.ingredient_type.get()
 

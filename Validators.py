@@ -93,17 +93,6 @@ class Validator:
                 return "non_positive_num"
 
 
-    # @staticmethod
-    # def validate_product_name(product_name):
-    #     if product_name == "":
-    #         return "empty"
-    #
-    #     if len(product_name) > 30:
-    #         return "too_long"
-    #
-    #     if Validator.validate_spaces_in_text(product_name):
-    #         return "spaces"
-
     @staticmethod
     def validate_ingredient_name(ingredient_name):
         if ingredient_name == "":

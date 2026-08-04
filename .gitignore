@@ -3,4 +3,4 @@ __pycache__/
 .idea/
 .venv/
 venv/
-product_data.json
+recipe_data.json

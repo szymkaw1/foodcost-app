@@ -4,41 +4,44 @@ import json
 
 class Data:
     def __init__(self):
-        self.product_data = {}
+        self.recipe_data = {}
         self.load_json()
 
 
 # =================================== JSON ==================================================
     def save_to_json(self):
-        with open("product_data.json", "w", encoding="utf-8") as data_file:
-            json.dump(self.product_data, data_file, indent=4,  ensure_ascii=False)
+        with open("recipe_data.json", "w", encoding="utf-8") as data_file:
+            json.dump(self.recipe_data, data_file, indent=4, ensure_ascii=False)
 
 
     def load_json(self):
         try:
-            with open("product_data.json", "r", encoding="utf-8") as data_file:
-                self.product_data = json.load(data_file)
+            with open("recipe_data.json", "r", encoding="utf-8") as data_file:
+                self.recipe_data = json.load(data_file)
 
         except FileNotFoundError:
-            with open("product_data.json", "w", encoding="utf-8") as data_file:
-                 json.dump(self.product_data, data_file, indent=4,  ensure_ascii=False)
+            with open("recipe_data.json", "w", encoding="utf-8") as data_file:
+                 json.dump(self.recipe_data, data_file, indent=4, ensure_ascii=False)
+
+        except json.JSONDecodeError:
+            self.recipe_data = {}
 
     # =================================== COUNTING ==================================================
 
-    def count_ingredients_price(self, product_name):
+    def count_ingredients_price(self, recipe_name):
         total_price = 0
-        ingredient = self.product_data[product_name]
+        ingredient = self.recipe_data[recipe_name]
 
-# DODAJE CENE SKLADNIKOW DLA JEDNEGO PRODUKTU
+# DODAJE CENE SKLADNIKOW DLA JEDNEJ RECEPTURY
         for ingredient_name, details in ingredient.items():
             ingredient_price = details["price"]
             total_price += ingredient_price
 
         return round(total_price,3)
 
-    def count_suggested_price(self, product_price, foodcost_percent_value):
+    def count_suggested_price(self, recipe_price, foodcost_percent_value):
         try:
-            suggested_price = product_price / foodcost_percent_value
+            suggested_price = recipe_price / foodcost_percent_value
         except TypeError:
             return
         else:
@@ -46,12 +49,12 @@ class Data:
 
     # =================================== HELPERS ==================================================
 
-    def get_ingredient(self, product_name, ingredient_name):
-        return self.product_data[product_name][ingredient_name]
+    def get_ingredient(self, recipe_name, ingredient_name):
+        return self.recipe_data[recipe_name][ingredient_name]
 
     # =================================== INGREDIENTS FUNCS ==================================================
 
-    def add_ingredient(self, product_name, new_ingredient):
+    def add_ingredient(self, recipe_name, new_ingredient):
         new_ingredient = {new_ingredient.name: {
             "amount": new_ingredient.amount,
             "price": new_ingredient.ingredient_price,
@@ -60,39 +63,39 @@ class Data:
             "quantity": new_ingredient.quantity_in_package}
         }
 
-        self.product_data[product_name].update(new_ingredient)
+        self.recipe_data[recipe_name].update(new_ingredient)
 
-    def del_ingredient(self, old_ingredient_name, product_name):
-        product_data = self.product_data[product_name]
+    def del_ingredient(self, old_ingredient_name, recipe_name):
+        recipe_data = self.recipe_data[recipe_name]
 
-        if old_ingredient_name in product_data:
-            del product_data[old_ingredient_name]
+        if old_ingredient_name in recipe_data:
+            del recipe_data[old_ingredient_name]
 
 
 
 
     # =================================== MAIN FUNCS ==================================================
 
-    def add_product(self, product_name):
-        new_product = {product_name: {}}
+    def add_recipe(self, recipe_name):
+        new_recipe = {recipe_name: {}}
 
-        self.product_data.update(new_product)
+        self.recipe_data.update(new_recipe)
 
-    def edit_ingredient_data(self, product_name, new_ingredient, old_ingredient_name):
-            self.del_ingredient(old_ingredient_name, product_name)
-            self.add_ingredient(product_name, new_ingredient)
-
-
-    def del_recipe(self, product_name):
-        self.product_data.pop(product_name)
+    def edit_ingredient_data(self, recipe_name, new_ingredient, old_ingredient_name):
+            self.del_ingredient(old_ingredient_name, recipe_name)
+            self.add_ingredient(recipe_name, new_ingredient)
 
 
+    def del_recipe(self, recipe_name):
+        self.recipe_data.pop(recipe_name)
 
-    def edit_product_name(self, old_product_name, new_product_name):
-        current_product = self.product_data[old_product_name]
-        new_name_product = ({new_product_name: current_product})
-        self.product_data.update(new_name_product)
-        self.del_recipe(old_product_name)
+
+
+    def edit_recipe_name(self, old_recipe_name, new_recipe_name):
+        current_recipe = self.recipe_data[old_recipe_name]
+        new_recipe_name = ({new_recipe_name: current_recipe})
+        self.recipe_data.update(new_recipe_name)
+        self.del_recipe(old_recipe_name)
 
 
 
